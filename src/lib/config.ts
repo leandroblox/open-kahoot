@@ -19,7 +19,8 @@ interface AppConfig {
  */
 function loadConfig(): AppConfig {
   // App configuration
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || '';
+  const appUrl = envAppUrl.endsWith('/') ? envAppUrl.slice(0, -1) : envAppUrl;
   
   // Game configuration
   const pinLengthEnv = process.env.NEXT_PUBLIC_GAME_PIN_LENGTH || '6';

@@ -13,10 +13,10 @@ export default function GameWaitingScreen({ gameStatus }: GameWaitingScreenProps
       <div className="text-center">
         <AnimatedIcon icon={Hourglass} />
         <h1 className="text-4xl text-white mb-4 font-jua">
-          {gameStatus === 'waiting' ? 'Waiting for game to start...' : 'Game Starting!'}
+          {gameStatus === 'waiting' ? 'Aguardando o início do jogo...' : 'O jogo vai começar!'}
         </h1>
-        <p className="text-white/80 text-xl">Get ready to answer some questions!</p>
+        <p className="text-white/80 text-xl">Prepare-se para responder às perguntas!</p>
       </div>
     </div>
   );
-} 
+}

@@ -33,7 +33,7 @@ export default function GameAnsweringPhaseScreen({
             <Clock className="w-8 h-8 text-white" />
           </div>
           <p className="text-white/80 text-lg">
-            {isHost ? 'Players are choosing their answers' : 'Choose your answer!'}
+            {isHost ? 'Os jogadores estão escolhendo as respostas' : 'Escolha a sua resposta!'}
           </p>
           <div className="w-full bg-white/20 rounded-full h-3 mt-4">
             <div 

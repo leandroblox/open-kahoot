@@ -65,8 +65,8 @@ export default function HostAnsweringScreen({
         ))}
       </div>
       <div className="text-center mt-6 text-white/80 text-lg">
-        Players are choosing their answers on their devices
+        Os jogadores estão escolhendo as respostas em seus dispositivos
       </div>
     </div>
   );
-} 
+}

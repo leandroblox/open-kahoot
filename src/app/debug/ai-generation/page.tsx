@@ -12,7 +12,7 @@ export default function AIGenerationDebugPage() {
 
   const handleGenerateQuestions = async (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => {
     try {
-      console.log('AI Generation requested:', { subject, language, accessKey, questionCount });
+      console.log('Geração por IA solicitada:', { subject, language, accessKey, questionCount });
       
       // Call the API endpoint
       const response = await fetch('/api/generate-questions', {
@@ -26,15 +26,15 @@ export default function AIGenerationDebugPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate questions');
+        throw new Error(data.error || 'Não foi possível gerar perguntas');
       }
 
       if (!data.success || !data.questions) {
-        throw new Error('Invalid response from API');
+        throw new Error('Resposta inválida da API');
       }
 
       // Display the generated questions
-      console.log('Generated questions:', data.questions);
+      console.log('Perguntas geradas:', data.questions);
       
       const questionsText = data.questions.map((q: {
         question: string;
@@ -47,23 +47,23 @@ export default function AIGenerationDebugPage() {
         `\n${i + 1}. ${q.question}\n   ✓ ${q.correct}\n   ✗ ${q.wrong1}\n   ✗ ${q.wrong2}\n   ✗ ${q.wrong3}${q.explanation ? `\n   💡 ${q.explanation}` : ''}`
       ).join('\n');
 
-      alert(`Successfully generated ${data.questions.length} questions!${questionsText}`);
-      
+      alert(`${data.questions.length} perguntas geradas com sucesso!${questionsText}`);
+
     } catch (error) {
-      console.error('Error generating questions:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Failed to generate questions'}`);
+      console.error('Erro ao gerar perguntas:', error);
+      alert(`Erro: ${error instanceof Error ? error.message : 'Não foi possível gerar perguntas'}`);
     }
   };
 
   return (
     <PageLayout gradient="host" maxWidth="4xl">
       <Card>
-        <h2 className="text-3xl text-white mb-8 text-center font-jua">AI Generation Modal - Debug</h2>
-        
+        <h2 className="text-3xl text-white mb-8 text-center font-jua">Modal de geração por IA - depuração</h2>
+
         <div>
           <div className="text-center mb-6">
             <p className="text-white/80 mb-4">
-              This page demonstrates the AI generation modal functionality.
+              Esta página demonstra a funcionalidade do modal de geração por IA.
             </p>
             <Button
               onClick={() => setIsModalOpen(true)}
@@ -71,12 +71,12 @@ export default function AIGenerationDebugPage() {
               size="lg"
               icon={Sparkles}
             >
-              Open AI Generation Modal
+              Abrir modal de geração por IA
             </Button>
           </div>
-          
+
           <p className="text-white/60 text-center mt-4">
-            Click the button to open the modal and test AI question generation.
+            Clique no botão para abrir o modal e testar a geração de perguntas com IA.
           </p>
         </div>
       </Card>

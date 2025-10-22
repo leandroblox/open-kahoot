@@ -7,8 +7,8 @@ export default function GameFallbackScreen() {
     <div className={`min-h-screen ${getGradient('waiting')} flex items-center justify-center p-8`}>
       <div className="text-center">
         <AnimatedIcon icon={Users} size="md" iconColor="text-white/60" className="mb-4" />
-        <h1 className="text-3xl font-bold text-white mb-4">Waiting for the next question...</h1>
-        <p className="text-white/80 text-lg">The host is preparing something exciting!</p>
+        <h1 className="text-3xl font-bold text-white mb-4">Aguardando a próxima pergunta...</h1>
+        <p className="text-white/80 text-lg">O anfitrião está preparando algo empolgante!</p>
 
         <div className="flex justify-center mt-6">
           <div className="animate-pulse flex space-x-1">

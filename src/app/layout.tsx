@@ -26,7 +26,7 @@ const chango = Chango({
 
 export const metadata: Metadata = {
   title: "Open Kahoot!",
-  description: "Real-time multiplayer quiz game - Create, Host, Play!",
+  description: "Quiz multiplayer em tempo real — crie, apresente e jogue!",
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${galindo.variable} ${chango.variable} antialiased`}
       >
