@@ -120,7 +120,7 @@ export default function QuestionEditor({
       className="bg-white/5 rounded-lg p-6 border border-white/20"
     >
       <div className="flex items-start justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white font-jua">Question {questionIndex + 1}</h3>
+        <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
         <div className="flex gap-2">
           <Button
             onClick={handleShuffleOptions}
@@ -128,7 +128,7 @@ export default function QuestionEditor({
             size="icon"
             icon={Shuffle}
             className="text-white hover:text-white/70"
-            title="Shuffle options"
+            title="Embaralhar alternativas"
           >
           </Button>
           <Button
@@ -166,7 +166,7 @@ export default function QuestionEditor({
           value={question.question}
           onChange={(e) => onUpdateQuestion(questionIndex, 'question', e.target.value)}
           className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-          placeholder="Enter your question..."
+          placeholder="Digite sua pergunta..."
         />
       </div>
       <div className="flex gap-4 mb-4">
@@ -192,7 +192,7 @@ export default function QuestionEditor({
                     ? 'bg-green-300/20 border-green-400 focus:ring-green-400 focus:border-green-300'
                     : 'bg-white/20 border-white/30 focus:ring-white/50 focus:border-white/50'
                 }`}
-                placeholder={`Option ${optionIndex + 1}...`}
+                placeholder={`Alternativa ${optionIndex + 1}...`}
               />
             </div>
           ))}
@@ -217,7 +217,7 @@ export default function QuestionEditor({
             {!question.image && (
               <div className="text-center">
                 <Upload className="mx-auto h-8 w-8 text-white/60" />
-                <span className="mt-2 text-sm text-white/80">Upload Image</span>
+                <span className="mt-2 text-sm text-white/80">Enviar imagem</span>
               </div>
             )}
             {question.image && (
@@ -231,7 +231,7 @@ export default function QuestionEditor({
               size="icon"
               icon={Trash2}
               className="absolute top-2 right-2 text-white bg-black/50 hover:bg-black/70 rounded-full"
-              title="Remove image"
+              title="Remover imagem"
             />
           )}
         </div>
@@ -241,7 +241,7 @@ export default function QuestionEditor({
           value={question.explanation || ''}
           onChange={(e) => onUpdateQuestion(questionIndex, 'explanation', e.target.value)}
           className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-          placeholder="Enter an optional explanation for the answer..."
+          placeholder="Digite uma explicação opcional para a resposta..."
         />
       </div>
     </motion.div>

@@ -204,7 +204,7 @@ export class GameplayLoop {
     const stats = this.questionManager.getQuestionStats(game);
     if (stats) {
       const correctAnswerCount = stats.answers.find(a => a.optionIndex === currentQuestion.correctAnswer)?.count || 0;
-      console.log(`[PIN ${game.pin}] Results | Correct: ${correctAnswerCount}/${stats.totalPlayers} | Avg score: ${Math.round(game.players.filter(p => !p.isHost).reduce((sum, p) => sum + p.score, 0) / Math.max(1, game.players.filter(p => !p.isHost).length))}`);
+      console.log(`[PIN ${game.pin}] Resultados | Acertos: ${correctAnswerCount}/${stats.totalPlayers} | Média de pontos: ${Math.round(game.players.filter(p => !p.isHost).reduce((sum, p) => sum + p.score, 0) / Math.max(1, game.players.filter(p => !p.isHost).length))}`);
       this.io.to(game.id).emit('questionEnded', stats);
       
       // Send host results
@@ -228,19 +228,19 @@ export class GameplayLoop {
     this.phaseCallbacks.set(game.id, null);
     
     // Stay in results phase - host will manually trigger leaderboard
-    console.log(`[PIN ${game.pin}] Waiting for host to continue to leaderboard`);
+    console.log(`[PIN ${game.pin}] Aguardando o anfitrião avançar para o ranking`);
   }
 
   private executeLeaderboardPhase(game: Game): void {
     const leaderboard = this.playerManager.getLeaderboard(game);
     const topPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
     
-    console.log(`[PIN ${game.pin}] Leaderboard | Players: ${leaderboard.length} | Top: ${topPlayer ? `${topPlayer.name} (${topPlayer.score})` : 'none'}`);
+    console.log(`[PIN ${game.pin}] Ranking | Jogadores: ${leaderboard.length} | Topo: ${topPlayer ? `${topPlayer.name} (${topPlayer.score})` : 'nenhum'}`);
     this.io.to(game.id).emit('leaderboardShown', leaderboard, game);
     
     // Stay in leaderboard phase - host will manually trigger next question or finish game
     const isLastQuestion = this.questionManager.isLastQuestion(game);
-    console.log(`[PIN ${game.pin}] ${isLastQuestion ? 'Final leaderboard shown' : 'Waiting for host to continue to next question'}`);
+    console.log(`[PIN ${game.pin}] ${isLastQuestion ? 'Ranking final exibido' : 'Aguardando o anfitrião seguir para a próxima pergunta'}`);
   }
 
   private executeFinishedPhase(game: Game): void {
@@ -254,7 +254,7 @@ export class GameplayLoop {
     
     const sortedPlayers = [...game.players].filter(p => !p.isHost).sort((a, b) => b.score - a.score);
     const winner = sortedPlayers.length > 0 ? sortedPlayers[0] : null;
-    console.log(`[PIN ${game.pin}] Game finished | Questions: ${game.questions.length} | Winner: ${winner ? `${winner.name} (${winner.score})` : 'none'}`);
+    console.log(`[PIN ${game.pin}] Jogo encerrado | Perguntas: ${game.questions.length} | Vencedor: ${winner ? `${winner.name} (${winner.score})` : 'nenhum'}`);
     
     this.io.to(game.id).emit('gameFinished', finalResults);
     
@@ -263,7 +263,7 @@ export class GameplayLoop {
     
     // Clean up game after a delay
     this.timerManager.setTimer(game.id, 'game_cleanup', () => {
-      console.log(`[PIN ${game.pin}] Cleaning up game resources after 30s delay`);
+      console.log(`[PIN ${game.pin}] Limpando recursos do jogo após 30s`);
       this.gameManager.deleteGame(game.id);
     }, 30000);
   }
@@ -275,7 +275,7 @@ export class GameplayLoop {
     const answeredCount = this.questionManager.getAnsweredPlayerCount(game);
     const totalPlayers = game.players.filter(p => !p.isHost && p.isConnected).length;
     
-    console.log(`[PIN ${game.pin}] Player answered | Progress: ${answeredCount}/${totalPlayers}`);
+    console.log(`[PIN ${game.pin}] Jogador respondeu | Progresso: ${answeredCount}/${totalPlayers}`);
     
     const callback = this.phaseCallbacks.get(game.id);
     if (callback && game.phase === 'answering') {
