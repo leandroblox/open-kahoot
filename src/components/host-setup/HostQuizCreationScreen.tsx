@@ -19,6 +19,8 @@ interface HostQuizCreationScreenProps {
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
+  onSetOptionCount: (questionIndex: number, count: number) => void;
+  onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
   onDownloadTSV: () => void;
@@ -35,6 +37,8 @@ export default function HostQuizCreationScreen({
   onFileImport,
   onUpdateQuestion,
   onUpdateOption,
+  onSetOptionCount,
+  onRemoveOption,
   onRemoveQuestion,
   onMoveQuestion,
   onDownloadTSV,
@@ -47,7 +51,7 @@ export default function HostQuizCreationScreen({
   return (
     <PageLayout gradient="host" maxWidth="4xl">
       <Card>
-        <h2 className="text-3xl text-white mb-8 text-center font-jua">Create Your Quiz</h2>
+        <h2 className="text-3xl text-white mb-8 text-center font-jua">Crie Seu Quiz</h2>
 
         <HostGameSettingsSection 
           gameSettings={gameSettings}
@@ -61,6 +65,8 @@ export default function HostQuizCreationScreen({
           onFileImport={onFileImport}
           onUpdateQuestion={onUpdateQuestion}
           onUpdateOption={onUpdateOption}
+          onSetOptionCount={onSetOptionCount}
+          onRemoveOption={onRemoveOption}
           onRemoveQuestion={onRemoveQuestion}
           onMoveQuestion={onMoveQuestion}
           onOpenAIModal={() => setIsAIModalOpen(true)}
@@ -75,7 +81,7 @@ export default function HostQuizCreationScreen({
                 size="lg"
                 icon={Download}
               >
-                Download TSV
+                Baixar TSV
               </Button>
               <Button
                 onClick={onCreateGame}
@@ -84,7 +90,7 @@ export default function HostQuizCreationScreen({
                 size="lg"
                 icon={MonitorPlay}
               >
-                Create Game
+                Criar Jogo
               </Button>
             </div>
           </div>

@@ -10,6 +10,8 @@ interface HostQuestionsSectionProps {
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
+  onSetOptionCount: (questionIndex: number, count: number) => void;
+  onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
   onOpenAIModal: () => void;
@@ -22,6 +24,8 @@ export default function HostQuestionsSection({
   onFileImport,
   onUpdateQuestion,
   onUpdateOption,
+  onSetOptionCount,
+  onRemoveOption,
   onRemoveQuestion,
   onMoveQuestion,
   onOpenAIModal
@@ -29,7 +33,7 @@ export default function HostQuestionsSection({
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl text-white font-jua">Questions</h2>
+        <h2 className="text-2xl text-white font-jua">Perguntas</h2>
       </div>
 
       {questions.length === 0 ? (
@@ -50,6 +54,8 @@ export default function HostQuestionsSection({
                 totalQuestions={questions.length}
                 onUpdateQuestion={onUpdateQuestion}
                 onUpdateOption={onUpdateOption}
+                onSetOptionCount={onSetOptionCount}
+                onRemoveOption={onRemoveOption}
                 onRemoveQuestion={onRemoveQuestion}
                 onMoveQuestion={onMoveQuestion}
               />

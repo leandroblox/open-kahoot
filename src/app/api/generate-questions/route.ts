@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (!subject || !language) {
       return NextResponse.json(
-        { error: 'Subject and language are required' },
+        { error: 'Assunto e idioma são obrigatórios' },
         { status: 400 }
       );
     }
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Validate question count
     if (questionCount < 1 || questionCount > 20) {
       return NextResponse.json(
-        { error: 'Question count must be between 1 and 20' },
+        { error: 'A quantidade de perguntas deve estar entre 1 e 20' },
         { status: 400 }
       );
     }
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     // Check if access key is provided
     if (!accessKey) {
       return NextResponse.json(
-        { error: 'Access key is required' },
+        { error: 'A chave de acesso é obrigatória' },
         { status: 401 }
       );
     }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const allowedKeys = process.env.AI_GENERATION_KEYS;
     if (!allowedKeys) {
       return NextResponse.json(
-        { error: 'AI generation keys not configured' },
+        { error: 'Chaves de geração via IA não configuradas' },
         { status: 500 }
       );
     }
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const keyList = allowedKeys.split(',').map(k => k.trim());
     if (!keyList.includes(accessKey)) {
       return NextResponse.json(
-        { error: 'Invalid access key' },
+        { error: 'Chave de acesso inválida' },
         { status: 403 }
       );
     }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured' },
+        { error: 'Chave da API da OpenAI não configurada' },
         { status: 500 }
       );
     }
@@ -135,7 +135,7 @@ You must respond with a valid JSON object in the following format:
 
     const content = completion.choices[0].message.content;
     if (!content) {
-      throw new Error('No response from OpenAI');
+      throw new Error('Nenhuma resposta recebida da OpenAI');
     }
 
     // Parse and validate the response with Zod
@@ -148,11 +148,11 @@ You must respond with a valid JSON object in the following format:
     });
 
   } catch (error) {
-    console.error('Error generating questions:', error);
+    console.error('Erro ao gerar perguntas:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to generate questions', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Não foi possível gerar perguntas',
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
       },
       { status: 500 }
     );

@@ -56,24 +56,24 @@ export default function JoinGameFormScreen() {
         localStorage.setItem(storageKey, playerId);
         router.push(`/game/${game.id}?player=true`);
       } else {
-        setError('Game not found or already started. Please check the PIN and try again.');
+        setError('Jogo não encontrado ou já iniciado. Verifique o PIN e tente novamente.');
       }
     });
   };
 
   const generateRandomNickname = () => {
     const prefixes = [
-      'Swift', 'Mighty', 'Shadow', 'Fire', 'Ice', 'Storm', 'Wild', 'Dark', 'Bright', 'Silent',
-      'Golden', 'Silver', 'Red', 'Blue', 'Green', 'Purple', 'Cosmic', 'Lightning', 'Thunder', 'Frost',
-      'Wolf', 'Eagle', 'Tiger', 'Dragon', 'Lion', 'Bear', 'Fox', 'Hawk', 'Shark', 'Raven',
-      'Steel', 'Crystal', 'Phantom', 'Mystic', 'Savage', 'Noble', 'Royal', 'Ancient', 'Blazing', 'Frozen'
+      'Ágil', 'Poderoso', 'Sombra', 'Fogo', 'Gelo', 'Tempestade', 'Selvagem', 'Noturno', 'Brilhante', 'Silencioso',
+      'Dourado', 'Prateado', 'Rubra', 'Azul', 'Verde', 'Violeta', 'Cósmico', 'Relâmpago', 'Trovão', 'Gélido',
+      'Lobo', 'Águia', 'Tigre', 'Dragão', 'Leão', 'Urso', 'Raposa', 'Falcão', 'Tubarão', 'Corvo',
+      'Aço', 'Cristal', 'Fantasma', 'Místico', 'Feroz', 'Nobre', 'Real', 'Ancestral', 'Chamejante', 'Congelante'
     ];
-    
+
     const suffixes = [
-      'Hunter', 'Warrior', 'Mage', 'Knight', 'Ninja', 'Master', 'Legend', 'Hero', 'Champion', 'Guardian',
-      'Blade', 'Arrow', 'Shield', 'Staff', 'Sword', 'Bow', 'Hammer', 'Axe', 'Spear', 'Dagger',
-      'Slayer', 'Breaker', 'Rider', 'Walker', 'Runner', 'Jumper', 'Striker', 'Fighter', 'Crusher', 'Bender',
-      'Wing', 'Claw', 'Fang', 'Eye', 'Heart', 'Soul', 'Spirit', 'Force', 'Power', 'Storm'
+      'Caçador', 'Guerreiro', 'Mago', 'Cavaleiro', 'Ninja', 'Mestre', 'Lenda', 'Herói', 'Campeão', 'Guardião',
+      'Lâmina', 'Flecha', 'Escudo', 'Cajado', 'Espada', 'Arco', 'Martelo', 'Machado', 'Lança', 'Adaga',
+      'Aniquilador', 'Quebrador', 'Cavaleiro', 'Viajante', 'Corredor', 'Saltador', 'Atacante', 'Lutador', 'Esmagador', 'Dobrador',
+      'Asa', 'Garra', 'Presa', 'Olho', 'Coração', 'Alma', 'Espírito', 'Força', 'Poder', 'Tempestade'
     ];
     
     const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
@@ -91,12 +91,12 @@ export default function JoinGameFormScreen() {
   return (
     <Card className="w-full max-w-md">
       <div className="text-center mb-8">
-        <h1 className="text-3xl text-white mb-2 font-jua">Join Game</h1>
+        <h1 className="text-3xl text-white mb-2 font-jua">Entrar no Jogo</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Input
-          label="Game PIN"
+          label="PIN do Jogo"
           type="tel"
           inputMode="numeric"
           value={pin}
@@ -113,19 +113,19 @@ export default function JoinGameFormScreen() {
         />
 
         <Input
-          label="Your Name"
+          label="Seu Nome"
           type="text"
           value={playerName}
           onChange={(e) => {
             setPlayerName(e.target.value.slice(0, 20));
             setError(''); // Clear error when user starts typing
           }}
-          placeholder="Enter your name..."
+          placeholder="Digite seu nome..."
           maxLength={20}
           actionButton={featureConfig.showRandomNickname ? {
             icon: Dice6,
             onClick: generateRandomNickname,
-            title: "Generate random nickname"
+            title: "Gerar apelido aleatório"
           } : undefined}
         />
 
@@ -144,13 +144,13 @@ export default function JoinGameFormScreen() {
           loading={isJoining}
           icon={LogIn}
         >
-          Join Game
+          Entrar no Jogo
         </Button>
       </form>
 
       <div className="mt-8 text-center">
         <p className="text-white/60 text-sm">
-          Don&apos;t have a PIN? Ask the host to share it with you.
+          Não tem um PIN? Peça para o anfitrião compartilhar com você.
         </p>
       </div>
     </Card>

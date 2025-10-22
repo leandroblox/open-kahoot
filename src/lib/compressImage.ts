@@ -49,7 +49,7 @@ export const compressImage = (
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
+          reject(new Error('Não foi possível obter o contexto do canvas'));
           return;
         }
         ctx.drawImage(img, 0, 0, width, height);

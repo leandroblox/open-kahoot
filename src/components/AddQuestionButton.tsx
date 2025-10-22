@@ -22,7 +22,7 @@ export default function AddQuestionButton({ onAddQuestion, onAppendTSV, onOpenAI
           size="sm"
           icon={Plus}
         >
-          Add Question
+          Adicionar Pergunta
         </Button>
         
         <div className="relative">
@@ -37,7 +37,7 @@ export default function AddQuestionButton({ onAddQuestion, onAppendTSV, onOpenAI
             size="sm"
             icon={Upload}
           >
-            Append TSV
+            Anexar TSV
           </Button>
         </div>
 
@@ -47,7 +47,7 @@ export default function AddQuestionButton({ onAddQuestion, onAppendTSV, onOpenAI
           size="sm"
           icon={Sparkles}
         >
-          Ask AI
+          Pedir para a IA
         </Button>
       </div>
       

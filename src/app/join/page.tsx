@@ -16,7 +16,7 @@ export default function JoinPage() {
       <div className="flex items-center justify-center">
         <Suspense fallback={
           <Card className="w-full max-w-md">
-            <LoadingScreen title="Loading..." size="sm" />
+            <LoadingScreen title="Carregando..." size="sm" />
           </Card>
         }>
           <JoinGameFormScreen />

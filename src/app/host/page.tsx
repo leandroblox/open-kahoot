@@ -28,7 +28,7 @@ export default function HostPage() {
   // Enable beforeunload when there are questions to prevent accidental data loss
   const { clearNavigationFlag } = useBeforeUnload({
     enabled: questions.length > 0,
-    message: 'You have unsaved questions in your quiz. Are you sure you want to leave?'
+    message: 'Você tem perguntas não salvas no seu quiz. Tem certeza de que deseja sair?'
   });
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function HostPage() {
             const data = results.data as Record<string, string>[];
             
             if (data.length === 0) {
-              throw new Error('File must contain at least one data row');
+              throw new Error('O arquivo deve conter ao menos uma linha de dados');
             }
 
             const requiredColumns = ['question', 'correct', 'wrong1', 'wrong2', 'wrong3'];
@@ -102,7 +102,7 @@ export default function HostPage() {
             // Check if all required columns exist
             const missingColumns = requiredColumns.filter(col => !headers.includes(col));
             if (missingColumns.length > 0) {
-              throw new Error(`Missing required columns: ${missingColumns.join(', ')}`);
+              throw new Error(`Colunas obrigatórias ausentes: ${missingColumns.join(', ')}`);
             }
 
             const parsedQuestions: Question[] = [];
@@ -144,8 +144,8 @@ export default function HostPage() {
         error: (error: unknown) => {
           const errorMessage = error && typeof error === 'object' && 'message' in error 
             ? String(error.message) 
-            : 'Unknown parsing error';
-          reject(new Error(`Failed to parse TSV file: ${errorMessage}`));
+            : 'Erro de análise desconhecido';
+          reject(new Error(`Falha ao processar o arquivo TSV: ${errorMessage}`));
         }
       });
     });
@@ -165,8 +165,8 @@ export default function HostPage() {
       // Show success message (you could add a toast notification here)
       // Removed console.log
     } catch (error) {
-      console.error('Import error:', error);
-      alert(`Error importing file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Erro na importação:', error);
+      alert(`Erro ao importar o arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
       event.target.value = '';
     }
   };
@@ -189,8 +189,8 @@ export default function HostPage() {
       // Show success message
       // Removed console.log
     } catch (error) {
-      console.error('Append error:', error);
-      alert(`Error appending file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Erro ao anexar arquivo:', error);
+      alert(`Erro ao anexar o arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
       event.target.value = '';
     }
   };
@@ -227,6 +227,68 @@ export default function HostPage() {
     setQuestions(updated);
   };
 
+  const setOptionCount = (questionIndex: number, count: number) => {
+    setQuestions(prevQuestions =>
+      prevQuestions.map((question, index) => {
+        if (index !== questionIndex) return question;
+
+        if (count === question.options.length) {
+          return question;
+        }
+
+        let newOptions: string[];
+        if (count > question.options.length) {
+          newOptions = [
+            ...question.options,
+            ...Array(count - question.options.length).fill('')
+          ];
+        } else {
+          newOptions = question.options.slice(0, count);
+        }
+
+        const correctedAnswer =
+          question.correctAnswer >= newOptions.length ? 0 : question.correctAnswer;
+
+        return {
+          ...question,
+          options: newOptions,
+          correctAnswer: correctedAnswer
+        };
+      })
+    );
+  };
+
+  const removeOption = (questionIndex: number, optionIndex: number) => {
+    setQuestions(prevQuestions =>
+      prevQuestions.map((question, index) => {
+        if (index !== questionIndex) return question;
+
+        if (question.options.length <= 2) {
+          return question;
+        }
+
+        const newOptions = question.options.filter((_, i) => i !== optionIndex);
+
+        let correctedAnswer = question.correctAnswer;
+        if (optionIndex === question.correctAnswer) {
+          correctedAnswer = 0;
+        } else if (optionIndex < question.correctAnswer) {
+          correctedAnswer = Math.max(0, question.correctAnswer - 1);
+        }
+
+        if (correctedAnswer >= newOptions.length) {
+          correctedAnswer = 0;
+        }
+
+        return {
+          ...question,
+          options: newOptions,
+          correctAnswer: correctedAnswer
+        };
+      })
+    );
+  };
+
   const removeQuestion = (index: number) => {
     setQuestions(questions.filter((_, i) => i !== index));
   };
@@ -246,7 +308,7 @@ export default function HostPage() {
     if (questions.length === 0) return;
     
     const socket = getSocket();
-    const title = 'Quiz Game'; // Default title
+    const title = 'Jogo de Quiz'; // Título padrão
     socket.emit('createGame', title, questions, gameSettings, (createdGame: Game) => {
       setGame(createdGame);
       clearNavigationFlag(); // Clear flag since game is created and questions are saved
@@ -271,12 +333,19 @@ export default function HostPage() {
 
   const getJoinUrl = () => {
     if (!game) return '';
-    return `${appConfig.url}/join?pin=${game.pin}`;
+
+    const baseUrl = appConfig.url || (typeof window !== 'undefined' ? window.location.origin : '');
+    if (!baseUrl) {
+      return `/join?pin=${game.pin}`;
+    }
+
+    const normalizedBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    return `${normalizedBase}/join?pin=${game.pin}`;
   };
 
   const downloadTSV = () => {
     if (questions.length === 0) {
-      alert('There are no questions to export.');
+      alert('Não há perguntas para exportar.');
       return;
     }
 
@@ -325,11 +394,11 @@ export default function HostPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate questions');
+        throw new Error(data.error || 'Não foi possível gerar perguntas');
       }
 
       if (!data.success || !data.questions) {
-        throw new Error('Invalid response from API');
+        throw new Error('Resposta inválida da API');
       }
 
       // Convert AI response to Question objects
@@ -360,11 +429,11 @@ export default function HostPage() {
       setQuestions([...questions, ...newQuestions]);
 
       // Show success message
-      alert(`Successfully generated ${newQuestions.length} questions!`);
-      
+      alert(`${newQuestions.length} perguntas geradas com sucesso!`);
+
     } catch (error) {
-      console.error('Error generating questions:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Failed to generate questions'}`);
+      console.error('Erro ao gerar perguntas:', error);
+      alert(`Erro: ${error instanceof Error ? error.message : 'Não foi possível gerar perguntas'}`);
     }
   };
 
@@ -389,6 +458,8 @@ export default function HostPage() {
       onFileImport={handleFileImport}
       onUpdateQuestion={updateQuestion}
       onUpdateOption={updateOption}
+      onSetOptionCount={setOptionCount}
+      onRemoveOption={removeOption}
       onRemoveQuestion={removeQuestion}
       onMoveQuestion={moveQuestion}
       onDownloadTSV={downloadTSV}
@@ -396,4 +467,4 @@ export default function HostPage() {
       onGenerateAIQuestions={handleGenerateAIQuestions}
     />
   );
-} 
+}
