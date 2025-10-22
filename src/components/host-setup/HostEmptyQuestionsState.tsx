@@ -14,8 +14,8 @@ export default function HostEmptyQuestionsState({
 }: HostEmptyQuestionsStateProps) {
   return (
     <div className="bg-white/5 rounded-lg p-8 border border-white/20 text-center">
-      <p className="text-white/80 text-lg mb-4 font-jua">Create Your First Question</p>
-      <p className="text-white/60 mb-6">Choose how you want to get started:</p>
+      <p className="text-white/80 text-lg mb-4 font-jua">Crie sua primeira pergunta</p>
+      <p className="text-white/60 mb-6">Escolha como deseja começar:</p>
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <Button
@@ -24,10 +24,10 @@ export default function HostEmptyQuestionsState({
           size="lg"
           icon={Plus}
         >
-          Create Question
+          Criar Pergunta
         </Button>
-        
-        <div className="text-white/40 text-sm">or</div>
+
+        <div className="text-white/40 text-sm">ou</div>
         
         <div className="relative">
           <input
@@ -37,11 +37,11 @@ export default function HostEmptyQuestionsState({
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           <Button variant="black" size="lg" icon={Upload}>
-            Import TSV File
+            Importar arquivo TSV
           </Button>
         </div>
 
-        <div className="text-white/40 text-sm">or</div>
+        <div className="text-white/40 text-sm">ou</div>
 
         <Button
           onClick={onOpenAIModal}
@@ -49,12 +49,12 @@ export default function HostEmptyQuestionsState({
           size="lg"
           icon={Sparkles}
         >
-          Ask AI
+          Pedir para a IA
         </Button>
       </div>
-      
+
       <p className="text-white/40 text-sm mt-4">
-        TSV files should contain columns: question, correct, wrong1, wrong2, wrong3, and optionally explanation.
+        Os arquivos TSV devem conter as colunas: question, correct, wrong1, wrong2, wrong3 e, opcionalmente, explanation.
       </p>
     </div>
   );

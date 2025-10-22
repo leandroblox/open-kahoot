@@ -87,7 +87,7 @@ export class EventHandlers {
       callback(game);
     } catch (error) {
       console.error(`❌ [CREATE_GAME] Error creating game:`, error);
-      socket.emit('error', 'Failed to create game');
+      socket.emit('error', 'Não foi possível criar o jogo');
     }
   }
 
@@ -180,13 +180,13 @@ export class EventHandlers {
       const game = this.gameManager.getGame(gameId);
       if (!game) {
         // Removed console.log
-        socket.emit('error', 'Game not found');
+        socket.emit('error', 'Jogo não encontrado');
         return;
       }
 
       if (!this.playerManager.isHost(socket.id, game)) {
         // Removed console.log
-        socket.emit('error', 'Not authorized');
+        socket.emit('error', 'Não autorizado');
         return;
       }
 
@@ -202,7 +202,7 @@ export class EventHandlers {
       this.gameplayLoop.startGameLoop(game);
     } catch (error) {
       console.error(`❌ [START_GAME] Error starting game:`, error);
-      socket.emit('error', 'Failed to start game');
+      socket.emit('error', 'Não foi possível iniciar o jogo');
     }
   }
 
@@ -321,13 +321,13 @@ export class EventHandlers {
       const game = this.gameManager.getGame(gameId);
       if (!game) {
         // Removed console.log
-        socket.emit('error', 'Game not found');
+        socket.emit('error', 'Jogo não encontrado');
         return;
       }
 
       if (!this.playerManager.isHost(socket.id, game)) {
         // Removed console.log
-        socket.emit('error', 'Not authorized');
+        socket.emit('error', 'Não autorizado');
         return;
       }
 
@@ -340,7 +340,7 @@ export class EventHandlers {
       socket.emit('gameLogs', tsvData, filename);
     } catch (error) {
       console.error(`❌ [DOWNLOAD_LOGS] Error generating logs:`, error);
-      socket.emit('error', 'Failed to generate logs');
+      socket.emit('error', 'Não foi possível gerar os logs');
     }
   }
 
@@ -351,20 +351,20 @@ export class EventHandlers {
       const game = this.gameManager.getGame(gameId);
       if (!game) {
         // Removed console.log
-        socket.emit('error', 'Game not found');
+        socket.emit('error', 'Jogo não encontrado');
         return;
       }
 
       if (!this.playerManager.isHost(socket.id, game)) {
         // Removed console.log
-        socket.emit('error', 'Not authorized');
+        socket.emit('error', 'Não autorizado');
         return;
       }
 
       // Only allow toggling in waiting phase
       if (game.status !== 'waiting') {
         // Removed console.log
-        socket.emit('error', 'Can only toggle dyslexia support in lobby');
+        socket.emit('error', 'O suporte para dislexia só pode ser alterado no lobby');
         return;
       }
 
@@ -376,11 +376,11 @@ export class EventHandlers {
         this.io.to(game.id).emit('gameUpdated', game);
       } else {
         // Removed console.log
-        socket.emit('error', 'Failed to toggle dyslexia support');
+        socket.emit('error', 'Não foi possível alternar o suporte para dislexia');
       }
     } catch (error) {
       console.error(`❌ [TOGGLE_DYSLEXIA] Error toggling dyslexia support:`, error);
-      socket.emit('error', 'Failed to toggle dyslexia support');
+      socket.emit('error', 'Não foi possível alternar o suporte para dislexia');
     }
   }
 

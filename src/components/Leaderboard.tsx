@@ -18,9 +18,9 @@ interface LeaderboardProps {
   }[];
 }
 
-export default function Leaderboard({ 
-  players, 
-  title = "Leaderboard",
+export default function Leaderboard({
+  players,
+  title = "Ranking",
   subtitle,
   showPodium = true,
   className = "",
@@ -101,13 +101,13 @@ export default function Leaderboard({
               <div>
                 <div className="text-white font-bold text-xl">{player.name}</div>
                 {index === 0 && showPodium && (
-                  <div className="text-yellow-300 font-semibold">👑 Leader</div>
+                  <div className="text-yellow-300 font-semibold">👑 Líder</div>
                 )}
               </div>
             </div>
             <div className="text-right">
               <div className="text-white font-bold text-2xl">{player.score}</div>
-              <div className="text-white/70 text-sm">points</div>
+              <div className="text-white/70 text-sm">pontos</div>
             </div>
           </div>
         ))}

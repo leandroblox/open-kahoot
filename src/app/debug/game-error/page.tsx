@@ -6,7 +6,7 @@ import GameErrorScreen from '@/components/game-screens/GameErrorScreen';
 
 function GameErrorContent() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error') || 'Game not found or no longer available';
+  const error = searchParams.get('error') || 'Jogo não encontrado ou indisponível';
 
   return (
     <GameErrorScreen error={error} />
@@ -15,7 +15,7 @@ function GameErrorContent() {
 
 export default function DebugGameErrorPage() {
   return (
-    <Suspense fallback={<GameErrorScreen error="Loading..." />}>
+    <Suspense fallback={<GameErrorScreen error="Carregando..." />}>
       <GameErrorContent />
     </Suspense>
   );

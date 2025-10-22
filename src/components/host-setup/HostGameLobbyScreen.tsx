@@ -45,7 +45,7 @@ export default function HostGameLobbyScreen({
     const socket = getSocket();
     
     const handlePlayerJoined = (player: Player) => {
-      console.log(`Player joined: ${player.name} (${player.id})`);
+      console.log(`Jogador entrou: ${player.name} (${player.id})`);
       playBlup();
     };
     
@@ -81,7 +81,7 @@ export default function HostGameLobbyScreen({
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl text-white flex items-center gap-2 font-jua">
               <Users className="w-6 h-6" />
-              Players ({playersOnly.length})
+              Jogadores ({playersOnly.length})
             </h2>
             <Button
               onClick={handleStartGame}
@@ -90,13 +90,13 @@ export default function HostGameLobbyScreen({
               size="lg"
               icon={Play}
             >
-              Start Game
+              Iniciar Jogo
             </Button>
           </div>
-          
-          <PlayerList 
+
+          <PlayerList
             players={playersOnly}
-            emptyMessage="Waiting for players to join..."
+            emptyMessage="Aguardando os jogadores entrarem..."
             columns={3}
             showDyslexiaControls={true}
             onToggleDyslexiaSupport={onToggleDyslexiaSupport}

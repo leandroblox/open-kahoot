@@ -11,10 +11,10 @@ export default function PlayerWaitingScreen() {
           iconColor="text-white"
         />
         <h2 className="text-3xl text-white mb-4 font-jua">
-          Answer Submitted!
+          Resposta enviada!
         </h2>
         <p className="text-white/70 text-lg">
-          Waiting for other players to answer...
+          Aguardando os outros jogadores responderem...
         </p>
       </div>
     </div>
