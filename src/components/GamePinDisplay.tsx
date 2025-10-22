@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import QRCode from 'react-qr-code';
+import { appConfig } from '@/lib/config';
 
 interface GamePinDisplayProps {
   pin: string;
@@ -51,7 +52,12 @@ export default function GamePinDisplay({
     }
   };
 
-  const websiteUrl = joinUrl ? getDomainFromUrl(joinUrl) : 'localhost:3000';
+  const baseWebsiteUrl = appConfig.url || (typeof window !== 'undefined' ? window.location.origin : '');
+  const websiteUrl = joinUrl
+    ? getDomainFromUrl(joinUrl)
+    : baseWebsiteUrl
+      ? getDomainFromUrl(baseWebsiteUrl)
+      : 'URL não configurada';
 
   return (
     <div className="flex gap-6 mb-6 justify-center">

@@ -271,7 +271,14 @@ export default function HostPage() {
 
   const getJoinUrl = () => {
     if (!game) return '';
-    return `${appConfig.url}/join?pin=${game.pin}`;
+
+    const baseUrl = appConfig.url || (typeof window !== 'undefined' ? window.location.origin : '');
+    if (!baseUrl) {
+      return `/join?pin=${game.pin}`;
+    }
+
+    const normalizedBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    return `${normalizedBase}/join?pin=${game.pin}`;
   };
 
   const downloadTSV = () => {

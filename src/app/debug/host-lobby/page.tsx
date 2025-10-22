@@ -2,9 +2,12 @@
 
 import HostGameLobbyScreen from '@/components/host-setup/HostGameLobbyScreen';
 import { mockGame } from '@/lib/debug-data';
+import { appConfig } from '@/lib/config';
 
 export default function DebugHostLobbyPage() {
-  const joinUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://localhost:3000'}/join?pin=${mockGame.pin}`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : appConfig.url;
+  const normalizedOrigin = origin ? (origin.endsWith('/') ? origin.slice(0, -1) : origin) : '';
+  const joinUrl = normalizedOrigin ? `${normalizedOrigin}/join?pin=${mockGame.pin}` : `/join?pin=${mockGame.pin}`;
 
   return (
     <HostGameLobbyScreen

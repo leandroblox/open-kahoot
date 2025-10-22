@@ -19,7 +19,7 @@ A real-time multiplayer quiz game inspired by Kahoot!, built with Next.js, Socke
 
    Variables are :
 
-   - `NEXT_PUBLIC_APP_URL`: The base URL of your application used for generating join links, for example `www.open-kahoot.ch`. Default is `http://localhost:3000`.
+   - `NEXT_PUBLIC_APP_URL`: (optional) The base URL of your application used for generating join links, for example `www.open-kahoot.ch`. If not provided the runtime origin will be used, which works well behind reverse proxies such as Dokploy aliases.
    - `NEXT_PUBLIC_SHOW_RANDOM_NICKNAME`: Enable/disable the random nickname generator button. Possible values are `0` and `1`. Default is `0`.
    - `NEXT_PUBLIC_GAME_PIN_LENGTH`: Number of digits for game PINs. Accepts any positive integer between `3` and `10`. Default is `6`.
    - `OPENAI_API_KEY`: Your OpenAI API key for AI-powered quiz generation. Get one at https://platform.openai.com/api-keys (optional, only needed for AI features).
@@ -29,7 +29,7 @@ A real-time multiplayer quiz game inspired by Kahoot!, built with Next.js, Socke
    npm run dev
    ```
 
-   The application will be available at `http://localhost:3000`.
+   The application will be available at `http://localhost:3000` (or the Dokploy alias you configured).
 
 ## Features
 
