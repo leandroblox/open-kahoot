@@ -15,6 +15,8 @@ export default function DebugHostQuizCreationPage() {
       onFileImport={() => {}}
       onUpdateQuestion={() => {}}
       onUpdateOption={() => {}}
+      onSetOptionCount={() => {}}
+      onRemoveOption={() => {}}
       onRemoveQuestion={() => {}}
       onMoveQuestion={() => {}}
       onDownloadTSV={() => {}}
