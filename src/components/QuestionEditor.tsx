@@ -123,7 +123,7 @@ export default function QuestionEditor({
   const MotionContainer = motion.div;
 
   return (
-    <MotionContainer
+    <motion.div
       layout
       layoutId={question.id}
       transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -141,6 +141,9 @@ export default function QuestionEditor({
           />
         </div>
         <div className="flex gap-2 self-start">
+      <div className="flex items-start justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
+        <div className="flex gap-2">
           <Button
             onClick={handleShuffleOptions}
             disabled={question.options.length < 2}
@@ -148,6 +151,7 @@ export default function QuestionEditor({
             size="icon"
             icon={Shuffle}
             className="text-white hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-white hover:text-white/70"
             title="Embaralhar alternativas"
           >
           </Button>
