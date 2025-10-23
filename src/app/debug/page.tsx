@@ -8,49 +8,49 @@ import Card from '@/components/Card';
 export default function DebugIndexPage() {
   const debugScreens = [
     {
-      title: 'Host Setup',
+      title: 'Configuração do anfitrião',
       screens: [
-        { name: 'Quiz Creation', path: '/debug/host-quiz-creation', icon: Settings },
-        { name: 'Game Lobby', path: '/debug/host-lobby', icon: Users },
+        { name: 'Criação do quiz', path: '/debug/host-quiz-creation', icon: Settings },
+        { name: 'Sala de espera', path: '/debug/host-lobby', icon: Users },
       ]
     },
     {
-      title: 'Join Flow',
+      title: 'Fluxo de entrada',
       screens: [
-        { name: 'Join Game Form', path: '/debug/join-form', icon: LogIn },
+        { name: 'Formulário de entrada', path: '/debug/join-form', icon: LogIn },
       ]
     },
     {
-      title: 'Game Phases (Host View)',
+      title: 'Fases do jogo (visão do anfitrião)',
       screens: [
-        { name: 'Waiting Screen', path: '/debug/game-waiting', icon: Clock },
-        { name: 'Thinking Phase', path: '/debug/game-thinking?view=host', icon: Eye },
-        { name: 'Answering Phase', path: '/debug/game-answering?view=host', icon: Play },
-        { name: 'Results Phase', path: '/debug/game-results?view=host', icon: Trophy },
-        { name: 'Leaderboard', path: '/debug/game-leaderboard', icon: Trophy },
-        { name: 'Final Results', path: '/debug/game-final-results?view=host', icon: Trophy },
+        { name: 'Tela de espera', path: '/debug/game-waiting', icon: Clock },
+        { name: 'Fase de leitura', path: '/debug/game-thinking?view=host', icon: Eye },
+        { name: 'Fase de resposta', path: '/debug/game-answering?view=host', icon: Play },
+        { name: 'Fase de resultados', path: '/debug/game-results?view=host', icon: Trophy },
+        { name: 'Ranking', path: '/debug/game-leaderboard', icon: Trophy },
+        { name: 'Resultados finais', path: '/debug/game-final-results?view=host', icon: Trophy },
       ]
     },
     {
-      title: 'Game Phases (Player View)',
+      title: 'Fases do jogo (visão do jogador)',
       screens: [
-        { name: 'Thinking Phase', path: '/debug/game-thinking?view=player', icon: Eye },
-        { name: 'Answering Phase', path: '/debug/game-answering?view=player', icon: Play },
-        { name: 'Answering Phase (Answered)', path: '/debug/game-answering-answered', icon: Play },
-        { name: 'Results Phase (Correct)', path: '/debug/game-results?view=player&result=correct', icon: Trophy },
-        { name: 'Results Phase (Incorrect)', path: '/debug/game-results?view=player&result=incorrect', icon: Trophy },
-        { name: 'Player Waiting', path: '/debug/game-player-waiting', icon: Clock },
-        { name: 'Final Results', path: '/debug/game-final-results?view=player', icon: Trophy },
+        { name: 'Fase de leitura', path: '/debug/game-thinking?view=player', icon: Eye },
+        { name: 'Fase de resposta', path: '/debug/game-answering?view=player', icon: Play },
+        { name: 'Fase de resposta (respondido)', path: '/debug/game-answering-answered', icon: Play },
+        { name: 'Fase de resultados (acerto)', path: '/debug/game-results?view=player&result=correct', icon: Trophy },
+        { name: 'Fase de resultados (erro)', path: '/debug/game-results?view=player&result=incorrect', icon: Trophy },
+        { name: 'Jogador aguardando', path: '/debug/game-player-waiting', icon: Clock },
+        { name: 'Resultados finais', path: '/debug/game-final-results?view=player', icon: Trophy },
       ]
     },
     {
-      title: 'System Screens',
+      title: 'Telas do sistema',
       screens: [
-        { name: 'Validation Screen', path: '/debug/game-validation', icon: Clock },
-        { name: 'Waiting for Results (Host)', path: '/debug/game-waiting-for-results?view=host', icon: Clock },
-        { name: 'Waiting for Results (Player)', path: '/debug/game-waiting-for-results?view=player', icon: Clock },
-        { name: 'Error Screen', path: '/debug/game-error', icon: Eye },
-        { name: 'Fallback Screen', path: '/debug/game-fallback', icon: Eye },
+        { name: 'Tela de validação', path: '/debug/game-validation', icon: Clock },
+        { name: 'Aguardando resultados (anfitrião)', path: '/debug/game-waiting-for-results?view=host', icon: Clock },
+        { name: 'Aguardando resultados (jogador)', path: '/debug/game-waiting-for-results?view=player', icon: Clock },
+        { name: 'Tela de erro', path: '/debug/game-error', icon: Eye },
+        { name: 'Tela alternativa', path: '/debug/game-fallback', icon: Eye },
       ]
     },
   ];
@@ -59,8 +59,8 @@ export default function DebugIndexPage() {
     <PageLayout gradient="host" maxWidth="4xl">
       <Card>
         <div className="text-center mb-8">
-          <h1 className="text-3xl text-white mb-2 font-jua">Debug Screens</h1>
-          <p className="text-white/80">Preview all game layouts and phases</p>
+          <h1 className="text-3xl text-white mb-2 font-jua">Telas de depuração</h1>
+          <p className="text-white/80">Visualize todos os layouts e fases do jogo</p>
         </div>
 
         <div className="space-y-8">

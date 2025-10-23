@@ -37,7 +37,7 @@ export function useCountdownMusic() {
     audioRef.current.loop = false; // Countdown tracks should not loop
  
     audioRef.current.play().catch((error) => {
-      console.warn('Failed to play countdown music:', error);
+      console.warn('Falha ao reproduzir a música de contagem regressiva:', error);
     });
   }, []);
 
@@ -54,7 +54,7 @@ export function useCountdownMusic() {
     audioRef.current.loop = false; // Gong should only play once
  
     audioRef.current.play().catch((error) => {
-      console.warn('Failed to play gong sound:', error);
+      console.warn('Falha ao reproduzir o som do gongo:', error);
     });
   }, []);
 
@@ -80,7 +80,7 @@ export function useCountdownMusic() {
     setIsInLobby(true);
     
     lobbyAudioRef.current.play().catch((error) => {
-      console.warn('Failed to play lobby music:', error);
+      console.warn('Falha ao reproduzir a música do lobby:', error);
     });
   }, []);
 
@@ -103,7 +103,7 @@ export function useCountdownMusic() {
     
     // Play blup sound alongside lobby music
     blupAudio.play().catch((error) => {
-      console.warn('Failed to play blup sound:', error);
+      console.warn('Falha ao reproduzir o som de confirmação:', error);
     });
   }, [isInLobby]);
 

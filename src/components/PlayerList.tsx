@@ -14,7 +14,7 @@ interface PlayerListProps {
 export default function PlayerList({ 
   players, 
   title,
-  emptyMessage = "Waiting for players to join...",
+  emptyMessage = "Aguardando os jogadores entrarem...",
   className = "",
   columns = 3,
   showDyslexiaControls = false,
@@ -50,7 +50,7 @@ export default function PlayerList({
             >
               <div className="text-white font-semibold">{player.name}</div>
               {player.score !== undefined && (
-                <div className="text-white/80 text-sm mt-1">{player.score} points</div>
+                <div className="text-white/80 text-sm mt-1">{player.score} pontos</div>
               )}
               
               {showDyslexiaControls && (
@@ -62,16 +62,16 @@ export default function PlayerList({
                         ? 'bg-purple-500 text-white' 
                         : 'bg-white/20 text-white/70 hover:bg-white/30'
                     }`}
-                    title={player.hasDyslexiaSupport ? 'Dyslexia support enabled' : 'Enable dyslexia support'}
+                    title={player.hasDyslexiaSupport ? 'Suporte para dislexia ativado' : 'Ativar suporte para dislexia'}
                   >
                     <Brain className="w-3 h-3 mr-1" />
-                    {player.hasDyslexiaSupport ? 'ON' : 'OFF'}
+                    {player.hasDyslexiaSupport ? 'ATIVO' : 'INATIVO'}
                   </button>
                 </div>
               )}
-              
+
               {player.hasDyslexiaSupport && (
-                <div className="absolute top-1 right-1" title="Dyslexia support enabled">
+                <div className="absolute top-1 right-1" title="Suporte para dislexia ativado">
                   <Brain className="w-4 h-4 text-purple-400" />
                 </div>
               )}

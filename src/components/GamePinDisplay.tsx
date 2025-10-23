@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import QRCode from 'react-qr-code';
+import { appConfig } from '@/lib/config';
 
 interface GamePinDisplayProps {
   pin: string;
@@ -51,19 +52,24 @@ export default function GamePinDisplay({
     }
   };
 
-  const websiteUrl = joinUrl ? getDomainFromUrl(joinUrl) : 'localhost:3000';
+  const baseWebsiteUrl = appConfig.url || (typeof window !== 'undefined' ? window.location.origin : '');
+  const websiteUrl = joinUrl
+    ? getDomainFromUrl(joinUrl)
+    : baseWebsiteUrl
+      ? getDomainFromUrl(baseWebsiteUrl)
+      : 'URL não configurada';
 
   return (
     <div className="flex gap-6 mb-6 justify-center">
       {/* Website URL Box */}
       <div className="bg-white/20 rounded-lg p-6 flex flex-col items-center justify-center min-h-[100px]">
-        <div className="text-white/80 text-sm text-center">Website URL</div>
+        <div className="text-white/80 text-sm text-center">Endereço do Site</div>
         <div className="text-3xl font-bold text-white text-center break-all">{websiteUrl}</div>
       </div>
       
       {/* PIN Box */}
       <div className="bg-white/20 rounded-lg p-6 flex flex-col items-center justify-center min-h-[100px]">
-        <div className="text-white/80 text-sm">Game PIN</div>
+        <div className="text-white/80 text-sm">PIN do Jogo</div>
         <div className="text-5xl font-bold text-white">{pin}</div>
       </div>
       
@@ -72,7 +78,7 @@ export default function GamePinDisplay({
         <div 
           className="bg-white rounded-lg p-4 flex flex-col items-center justify-center min-h-[100px] cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => setShowQRModal(true)}
-          title="Click to enlarge QR code"
+          title="Clique para ampliar o QR Code"
         >
           <QRCode
             size={80}

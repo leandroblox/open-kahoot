@@ -17,14 +17,14 @@ export default function GameFinalResultsScreen({
 }: GameFinalResultsScreenProps) {
   const hostButtons = [
     {
-      text: "Download Game Logs",
+      text: "Baixar registros do jogo",
       onClick: onDownloadLogs,
       icon: Download,
       iconPosition: 'left' as const,
       variant: 'black' as const
     },
     {
-      text: "Back to Home",
+      text: "Voltar para a página inicial",
       onClick: () => window.location.href = '/',
       icon: LogOut,
       iconPosition: 'right' as const,
@@ -34,7 +34,7 @@ export default function GameFinalResultsScreen({
 
   const playerButtons = [
     {
-      text: "Back to Home",
+      text: "Voltar para a página inicial",
       onClick: () => window.location.href = '/',
       icon: LogOut,
       iconPosition: 'right' as const
@@ -46,8 +46,8 @@ export default function GameFinalResultsScreen({
       <Card>
         <Leaderboard
           players={finalScores}
-          title="Game Over!"
-          subtitle="Final Results"
+          title="Fim de jogo!"
+          subtitle="Resultados finais"
           buttons={isHost ? hostButtons : playerButtons}
         />
       </Card>

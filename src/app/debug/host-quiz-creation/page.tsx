@@ -15,12 +15,15 @@ export default function DebugHostQuizCreationPage() {
       onFileImport={() => {}}
       onUpdateQuestion={() => {}}
       onUpdateOption={() => {}}
+      onSetOptionCount={() => {}}
+      onRemoveOption={() => {}}
       onRemoveQuestion={() => {}}
       onMoveQuestion={() => {}}
+      onChangeQuestionType={() => {}}
       onDownloadTSV={() => {}}
       onCreateGame={() => {}}
       onGenerateAIQuestions={async (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => {
-        console.log('AI generation in debug mode', { subject, language, accessKey, questionCount });
+        console.log('Geração por IA no modo de depuração', { subject, language, accessKey, questionCount });
         return Promise.resolve();
       }}
     />
