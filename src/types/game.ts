@@ -1,11 +1,14 @@
+export type QuestionType = 'single' | 'multiple' | 'boolean';
+
 export interface Question {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: number; // Index of correct answer (0-3)
+  correctAnswer: number; // Index of correct answer (0-based)
   timeLimit: number; // Time limit in seconds
   explanation?: string;
   image?: string;
+  type?: QuestionType;
 }
 
 export interface AnswerRecord {

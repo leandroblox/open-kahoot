@@ -22,10 +22,10 @@ export default function GameLeaderboardScreen({
       <Card>
         <Leaderboard
           players={leaderboard}
-          title="Current Leaderboard"
-          subtitle={`Question ${(game?.currentQuestionIndex ?? 0) + 1} of ${game?.questions.length ?? 0} completed`}
+          title="Classificação Atual"
+          subtitle={`Pergunta ${(game?.currentQuestionIndex ?? 0) + 1} de ${game?.questions.length ?? 0} concluída`}
           buttons={[{
-            text: isLastQuestion ? 'Finish Game' : 'Next Question',
+            text: isLastQuestion ? 'Encerrar Jogo' : 'Próxima Pergunta',
             onClick: onNextQuestion,
             icon: ChevronRight,
             iconPosition: 'right'

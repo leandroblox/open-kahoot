@@ -5,9 +5,9 @@ export default function GameValidationScreen() {
   return (
     <PageLayout gradient="loading" showLogo={false}>
       <div className="flex items-center justify-center min-h-[60vh]">
-        <LoadingScreen 
-          title="Validating game..." 
-          description="Please wait while we check the game status"
+        <LoadingScreen
+          title="Validando jogo..."
+          description="Por favor, aguarde enquanto verificamos o status do jogo"
         />
       </div>
     </PageLayout>
