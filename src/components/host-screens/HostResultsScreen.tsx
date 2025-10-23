@@ -41,7 +41,7 @@ export default function HostResultsScreen({
           </p>
         )}
         <p className="text-white/80 text-2xl">
-          {questionStats.correctAnswers} out of {questionStats.totalPlayers} players got it right!
+          {questionStats.correctAnswers} de {questionStats.totalPlayers} jogadores acertaram!
         </p>
       </div>
 
@@ -54,7 +54,7 @@ export default function HostResultsScreen({
           iconPosition="right"
           className="mx-auto"
         >
-          Show Leaderboard
+          Mostrar Ranking
         </Button>
       </div>
 
@@ -76,7 +76,7 @@ export default function HostResultsScreen({
                   {questionStats.question.options[index]}
                 </span>
                 {index === questionStats.question.correctAnswer && (
-                  <span className="text-green-300 font-bold text-lg">✓ CORRECT</span>
+                  <span className="text-green-300 font-bold text-lg">✓ CERTO</span>
                 )}
               </div>
               <div className="flex items-center gap-4">
