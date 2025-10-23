@@ -1,4 +1,4 @@
-import type { Question } from '@/types/game';
+import type { Question, QuestionType } from '@/types/game';
 import AddQuestionButton from '@/components/AddQuestionButton';
 import QuestionEditor from '@/components/QuestionEditor';
 import HostEmptyQuestionsState from './HostEmptyQuestionsState';
@@ -14,6 +14,7 @@ interface HostQuestionsSectionProps {
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
+  onChangeQuestionType: (index: number, type: QuestionType) => void;
   onOpenAIModal: () => void;
 }
 
@@ -28,6 +29,7 @@ export default function HostQuestionsSection({
   onRemoveOption,
   onRemoveQuestion,
   onMoveQuestion,
+  onChangeQuestionType,
   onOpenAIModal
 }: HostQuestionsSectionProps) {
   return (
@@ -58,6 +60,7 @@ export default function HostQuestionsSection({
                 onRemoveOption={onRemoveOption}
                 onRemoveQuestion={onRemoveQuestion}
                 onMoveQuestion={onMoveQuestion}
+                onChangeQuestionType={onChangeQuestionType}
               />
               <AddQuestionButton onAddQuestion={onAddQuestion} onAppendTSV={onAppendTSV} onOpenAIModal={onOpenAIModal} index={questionIndex + 1} />
             </div>

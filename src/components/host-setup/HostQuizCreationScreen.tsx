@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Download, MonitorPlay } from 'lucide-react';
-import type { Question, GameSettings } from '@/types/game';
+import type { Question, GameSettings, QuestionType } from '@/types/game';
 import PageLayout from '@/components/PageLayout';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
@@ -23,6 +23,7 @@ interface HostQuizCreationScreenProps {
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
+  onChangeQuestionType: (index: number, type: QuestionType) => void;
   onDownloadTSV: () => void;
   onCreateGame: () => void;
   onGenerateAIQuestions: (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => Promise<void>;
@@ -41,6 +42,7 @@ export default function HostQuizCreationScreen({
   onRemoveOption,
   onRemoveQuestion,
   onMoveQuestion,
+  onChangeQuestionType,
   onDownloadTSV,
   onCreateGame,
   onGenerateAIQuestions
@@ -69,6 +71,7 @@ export default function HostQuizCreationScreen({
           onRemoveOption={onRemoveOption}
           onRemoveQuestion={onRemoveQuestion}
           onMoveQuestion={onMoveQuestion}
+          onChangeQuestionType={onChangeQuestionType}
           onOpenAIModal={() => setIsAIModalOpen(true)}
         />
 

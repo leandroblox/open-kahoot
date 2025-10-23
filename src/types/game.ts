@@ -1,3 +1,5 @@
+export type QuestionType = 'single' | 'multiple' | 'boolean';
+
 export interface Question {
   id: string;
   question: string;
@@ -6,6 +8,7 @@ export interface Question {
   timeLimit: number; // Time limit in seconds
   explanation?: string;
   image?: string;
+  type?: QuestionType;
 }
 
 export interface AnswerRecord {

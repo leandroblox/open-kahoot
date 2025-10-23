@@ -2,7 +2,7 @@
 
 import { Trash2, ChevronUp, ChevronDown, Shuffle, Upload, MinusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Question } from '@/types/game';
+import type { Question, QuestionType } from '@/types/game';
 import Button from '@/components/Button';
 import { useCallback, useState } from 'react';
 import { compressImage } from '@/lib/compressImage';
@@ -18,6 +18,7 @@ interface QuestionEditorProps {
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
+  onChangeQuestionType: (index: number, type: QuestionType) => void;
 }
 
 export default function QuestionEditor({
@@ -29,8 +30,10 @@ export default function QuestionEditor({
   onSetOptionCount,
   onRemoveOption,
   onRemoveQuestion,
-  onMoveQuestion
+  onMoveQuestion,
+  onChangeQuestionType
 }: QuestionEditorProps) {
+  const currentType: QuestionType = question.type ?? 'multiple';
   const handleShuffleOptions = () => {
     // Create array of options with their indices
     const optionsWithIndices = question.options.map((option, index) => ({
@@ -123,25 +126,35 @@ export default function QuestionEditor({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="bg-white/5 rounded-lg p-6 border border-white/20"
     >
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
-          <div className="mt-2 flex items-center gap-2 text-sm">
-            <span className="text-white/70">Alternativas:</span>
-            <select
-              value={question.options.length}
-              onChange={(event) => onSetOptionCount(questionIndex, Number(event.target.value))}
-              className="bg-white/10 border border-white/30 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-white/50"
-            >
-              {[2, 3, 4].map(count => (
-                <option key={count} value={count} className="text-black">
-                  {count}
-                </option>
-              ))}
-            </select>
-            {question.options.length === 2 && (
-              <span className="text-white/60">Ideal para verdadeiro ou falso</span>
-            )}
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-4">
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
+            <p className="text-white/60 text-sm">Selecione o tipo de pergunta antes de editar o conteúdo.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { value: 'single', label: 'Escolha Única', description: 'Foque em poucas alternativas' },
+              { value: 'multiple', label: 'Múltipla Escolha', description: 'Até quatro alternativas' },
+              { value: 'boolean', label: 'Verdadeiro ou Falso', description: 'Duas opções fixas' }
+            ] as { value: QuestionType; label: string; description: string }[]).map(option => {
+              const isActive = currentType === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onChangeQuestionType(questionIndex, option.value)}
+                  className={`px-4 py-2 rounded-lg border text-left transition-colors ${
+                    isActive
+                      ? 'border-white/70 bg-white/20 text-white'
+                      : 'border-white/20 bg-white/5 text-white/70 hover:bg-white/10'
+                  }`}
+                >
+                  <span className="block font-semibold font-jua">{option.label}</span>
+                  <span className="block text-xs text-white/60">{option.description}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
         <div className="flex gap-2 self-start">
@@ -193,17 +206,36 @@ export default function QuestionEditor({
           placeholder="Digite sua pergunta..."
         />
       </div>
-      <div className="flex gap-4 mb-4">
-        <div className="grid flex-1 grid-cols-1 md:grid-cols-2 gap-4">
-          {question.options.map((option, optionIndex) => {
-            const isCorrectAnswer = question.correctAnswer === optionIndex;
-            const canRemoveOption = question.options.length > 2;
+      <div className="flex flex-col lg:flex-row gap-4 mb-4">
+        <div className="flex-1 space-y-4">
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <span>Alternativas:</span>
+            <select
+              value={question.options.length}
+              onChange={(event) => onSetOptionCount(questionIndex, Number(event.target.value))}
+              disabled={currentType === 'boolean'}
+              className="bg-white/10 border border-white/30 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {([2, 3, 4] as const).map(count => (
+                <option key={count} value={count} className="text-black">
+                  {count}
+                </option>
+              ))}
+            </select>
+            {currentType === 'boolean' && (
+              <span className="text-white/60">Tipo fixo com duas opções</span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {question.options.map((option, optionIndex) => {
+              const isCorrectAnswer = question.correctAnswer === optionIndex;
+              const canRemoveOption = question.options.length > 2 && currentType !== 'boolean';
 
-            return (
-              <div
-                key={optionIndex}
-                className="flex items-center gap-2"
-              >
+              return (
+                <div
+                  key={optionIndex}
+                  className="flex items-center gap-2"
+                >
               <input
                 type="radio"
                 name={`correct-${questionIndex}`}
@@ -233,10 +265,11 @@ export default function QuestionEditor({
                 />
               )}
             </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-        <div className="relative w-28 h-28">
+        <div className="relative w-28 h-28 self-start">
           <input
             type="file"
             id={`image-upload-${question.id}`}
