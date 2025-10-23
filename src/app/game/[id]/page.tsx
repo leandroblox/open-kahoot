@@ -188,26 +188,26 @@ export default function GamePage() {
           
           if (storedId) {
             // We have a stored player ID, try to rejoin
-            const playerName = gameData.players.find(p => p.id === storedId)?.name || 'Player';
+            const playerName = gameData.players.find(p => p.id === storedId)?.name || 'Jogador';
             
             socket.emit('joinGame', gamePin, playerName, storedId, (success: boolean, game?: Game) => {
               dispatch({ type: 'SET_VALIDATING', payload: false });
               if (success && game) {
                 dispatch({ type: 'SET_GAME_DATA', payload: { game: game, status: game.status } });
               } else {
-                dispatch({ type: 'SET_GAME_ERROR', payload: 'Unable to rejoin game. You may have been removed.' });
+                dispatch({ type: 'SET_GAME_ERROR', payload: 'Não foi possível retornar ao jogo. Talvez você tenha sido removido.' });
                 setTimeout(() => router.push('/'), 3000);
               }
             });
           } else {
             // No stored player ID for this game
             dispatch({ type: 'SET_VALIDATING', payload: false });
-            dispatch({ type: 'SET_GAME_ERROR', payload: 'No player data found for this game. Please join the game again.' });
+            dispatch({ type: 'SET_GAME_ERROR', payload: 'Não encontramos dados deste jogador para este jogo. Entre novamente.' });
             setTimeout(() => router.push('/'), 3000);
           }
         } else {
           dispatch({ type: 'SET_VALIDATING', payload: false });
-          dispatch({ type: 'SET_GAME_ERROR', payload: 'Game not found or no longer available' });
+          dispatch({ type: 'SET_GAME_ERROR', payload: 'Jogo não encontrado ou indisponível' });
           setTimeout(() => router.push('/'), 3000);
         }
       });
@@ -218,7 +218,7 @@ export default function GamePage() {
         if (valid && gameData) {
           dispatch({ type: 'SET_GAME_DATA', payload: { game: gameData, status: gameData.status } });
         } else {
-          dispatch({ type: 'SET_GAME_ERROR', payload: 'Game not found or no longer available' });
+          dispatch({ type: 'SET_GAME_ERROR', payload: 'Jogo não encontrado ou indisponível' });
           setTimeout(() => router.push('/'), 3000);
         }
       });
@@ -262,7 +262,7 @@ export default function GamePage() {
     });
 
     socket.on('playerAnswered', (playerId: string) => {
-      console.log(`[PIN ${state.game?.pin}] Player answered: ${playerId}`);
+      console.log(`[PIN ${state.game?.pin}] Jogador respondeu: ${playerId}`);
     });
 
     socket.on('gameLogs', (tsvData: string, filename: string) => {
@@ -291,7 +291,7 @@ export default function GamePage() {
       socket.off('playerAnswered');
       socket.off('gameLogs');
     };
-  }, [gameId, isHost, router]);
+  }, [gameId, isHost, router, state.game?.pin]);
 
   // Timer effect for question countdown
   useEffect(() => {

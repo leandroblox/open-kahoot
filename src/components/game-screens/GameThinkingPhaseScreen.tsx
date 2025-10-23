@@ -24,7 +24,7 @@ export default function GameThinkingPhaseScreen({
       <Timer
         timeLeft={timeLeft}
         totalTime={game?.settings.thinkTime || 5}
-        label={isHost ? 'Players are reading the question' : 'Read the question carefully'}
+        label={isHost ? 'Os jogadores estão lendo a pergunta' : 'Leia a pergunta com atenção'}
         variant="thinking"
       />
 

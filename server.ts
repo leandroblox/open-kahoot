@@ -5,8 +5,11 @@ import { Server as SocketIOServer } from 'socket.io';
 import { GameServer } from './src/lib/game';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const hostname = process.env.HOSTNAME || process.env.HOST || '0.0.0.0';
 const port = parseInt(process.env.PORT || '3000');
+
+// Optional public facing URL used only for logging purposes
+const publicUrl = process.env.PUBLIC_URL || process.env.NEXT_PUBLIC_APP_URL;
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
@@ -60,8 +63,9 @@ app.prepare().then(() => {
       console.error('Server error:', err);
       process.exit(1);
     })
-    .listen(port, () => {
-      console.log(`Ready on http://${hostname}:${port}`);
+    .listen(port, hostname, () => {
+      const addressDescription = publicUrl || `http://${hostname === '0.0.0.0' ? 'localhost' : hostname}:${port}`;
+      console.log(`Ready on ${addressDescription}`);
       console.log(`Game server initialized with modular architecture`);
     });
 }); 

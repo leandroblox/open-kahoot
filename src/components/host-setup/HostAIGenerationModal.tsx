@@ -13,8 +13,8 @@ interface HostAIGenerationModalProps {
 }
 
 const subjectPlaceholders = {
-  english: 'e.g., World War II, Photosynthesis, JavaScript Basics...',
-  french: 'ex: Seconde Guerre mondiale, Photosynthèse, Bases de JavaScript...'
+  english: 'ex.: Segunda Guerra Mundial, Fotossíntese, Noções básicas de JavaScript...',
+  french: 'ex.: Seconde Guerre mondiale, Photosynthèse, Bases de JavaScript...'
 };
 
 export default function HostAIGenerationModal({ 
@@ -30,12 +30,12 @@ export default function HostAIGenerationModal({
 
   const handleGenerate = async () => {
     if (!subject.trim()) {
-      alert('Please enter a subject for the quiz.');
+      alert('Informe um assunto para o quiz.');
       return;
     }
 
     if (!accessKey.trim()) {
-      alert('Please enter the AI generation access key.');
+      alert('Informe a chave de acesso para geração via IA.');
       return;
     }
 
@@ -59,25 +59,25 @@ export default function HostAIGenerationModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="AI Quiz Generation">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Geração de quiz com IA">
       <p className="text-white/80 text-sm mb-6">
-        Let AI create quiz questions for you! Select a language and enter a subject.
+        Deixe a IA criar perguntas para você! Selecione um idioma e informe um assunto.
       </p>
 
       <div className="space-y-4">
 
         <Input
-        label="Access Key"
-        type="password"
-        placeholder="Enter AI generation access key"
-        value={accessKey}
-        onChange={(e) => setAccessKey(e.target.value)}
-        disabled={isGenerating}
+          label="Chave de acesso"
+          type="password"
+          placeholder="Digite a chave de acesso da geração via IA"
+          value={accessKey}
+          onChange={(e) => setAccessKey(e.target.value)}
+          disabled={isGenerating}
         />
 
         <div className="space-y-2">
           <label className="block text-white text-sm font-medium">
-            Language
+            Idioma
           </label>
           <select
             value={language}
@@ -85,13 +85,13 @@ export default function HostAIGenerationModal({
             disabled={isGenerating}
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option value="english" className="bg-slate-800">English</option>
-            <option value="french" className="bg-slate-800">Français</option>
+            <option value="english" className="bg-slate-800">Inglês</option>
+            <option value="french" className="bg-slate-800">Francês</option>
           </select>
         </div>
 
         <Input
-          label="Subject"
+          label="Assunto"
           placeholder={subjectPlaceholders[language]}
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
@@ -100,7 +100,7 @@ export default function HostAIGenerationModal({
 
         <div className="space-y-2">
           <label className="block text-white text-sm font-medium">
-            Number of Questions
+            Quantidade de perguntas
           </label>
           <input
             type="number"
@@ -122,13 +122,13 @@ export default function HostAIGenerationModal({
             size="md"
             icon={Sparkles}
           >
-            {isGenerating ? 'Generating...' : 'Generate Questions'}
+            {isGenerating ? 'Gerando...' : 'Gerar perguntas'}
           </Button>
         </div>
       </div>
 
       <p className="text-white/40 text-sm mt-4 text-center">
-        ⚠️ AI-generated content may contain inaccuracies. Please review and verify all questions before use.
+        ⚠️ O conteúdo gerado por IA pode conter imprecisões. Revise e confirme todas as perguntas antes de usar.
       </p>
     </Modal>
   );
