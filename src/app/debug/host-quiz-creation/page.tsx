@@ -15,8 +15,11 @@ export default function DebugHostQuizCreationPage() {
       onFileImport={() => {}}
       onUpdateQuestion={() => {}}
       onUpdateOption={() => {}}
+      onSetOptionCount={() => {}}
+      onRemoveOption={() => {}}
       onRemoveQuestion={() => {}}
       onMoveQuestion={() => {}}
+      onChangeQuestionType={() => {}}
       onDownloadTSV={() => {}}
       onCreateGame={() => {}}
       onGenerateAIQuestions={async (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => {

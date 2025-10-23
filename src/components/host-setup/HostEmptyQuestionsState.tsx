@@ -2,7 +2,7 @@ import { Plus, Upload, Sparkles } from 'lucide-react';
 import Button from '@/components/Button';
 
 interface HostEmptyQuestionsStateProps {
-  onAddQuestion: (index: number) => void;
+  onAddQuestion: (index?: number) => void;
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onOpenAIModal: () => void;
 }
@@ -15,6 +15,7 @@ export default function HostEmptyQuestionsState({
   return (
     <div className="bg-white/5 rounded-lg p-8 border border-white/20 text-center">
       <p className="text-white/80 text-lg mb-4 font-jua">Crie sua primeira pergunta</p>
+      <p className="text-white/60 mb-6">Escolha o tipo de pergunta ou importe um arquivo:</p>
       <p className="text-white/60 mb-6">Escolha como deseja começar:</p>
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -24,6 +25,7 @@ export default function HostEmptyQuestionsState({
           size="lg"
           icon={Plus}
         >
+          Selecionar tipo
           Criar Pergunta
         </Button>
 

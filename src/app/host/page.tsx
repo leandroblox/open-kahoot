@@ -9,14 +9,17 @@ import * as iconv from 'iconv-lite';
 import { getSocket } from '@/lib/socket-client';
 import { appConfig } from '@/lib/config';
 import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
-import type { Question, Game, Player, GameSettings } from '@/types/game';
+import type { Question, Game, Player, GameSettings, QuestionType } from '@/types/game';
 
 // Host Setup Components
 import HostGameLobbyScreen from '@/components/host-setup/HostGameLobbyScreen';
 import HostQuizCreationScreen from '@/components/host-setup/HostQuizCreationScreen';
+import QuestionTypePicker from '@/components/host-setup/QuestionTypePicker';
 
 export default function HostPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [isTypePickerOpen, setIsTypePickerOpen] = useState(false);
+  const [pendingQuestionIndex, setPendingQuestionIndex] = useState<number | null>(null);
   const [gameSettings, setGameSettings] = useState<GameSettings>({
     thinkTime: 5,
     answerTime: 20
@@ -131,6 +134,7 @@ export default function HostPage() {
                 options: shuffledAnswers,
                 correctAnswer: correctIndex,
                 timeLimit: 30, // Default time limit
+                type: 'multiple',
                 explanation: explanation || undefined,
                 image: image || undefined
               });
@@ -195,27 +199,119 @@ export default function HostPage() {
     }
   };
 
-  const addQuestion = (index?: number) => {
-    const newQuestion: Question = {
+  const buildQuestionTemplate = (type: QuestionType): Question => {
+    if (type === 'boolean') {
+      return {
+        id: uuidv4(),
+        question: '',
+        options: ['Verdadeiro', 'Falso'],
+        correctAnswer: 0,
+        timeLimit: 30,
+        type
+      };
+    }
+
+    const optionCount = type === 'single' ? 3 : 4;
+    return {
       id: uuidv4(),
       question: '',
-      options: ['', '', '', ''],
+      options: Array(optionCount).fill(''),
       correctAnswer: 0,
-      timeLimit: 30
+      timeLimit: 30,
+      type
     };
-    
-    if (index !== undefined) {
-      // Insert at specific position
-      const newQuestions = [...questions];
-      newQuestions.splice(index, 0, newQuestion);
-      setQuestions(newQuestions);
-    } else {
-      // Add at the end (fallback)
-      setQuestions([...questions, newQuestion]);
-    }
+  };
+
+  const insertQuestionAtIndex = (type: QuestionType, index: number) => {
+    const template = buildQuestionTemplate(type);
+    setQuestions(prevQuestions => {
+      const newQuestions = [...prevQuestions];
+      const safeIndex = Math.min(Math.max(index, 0), newQuestions.length);
+      newQuestions.splice(safeIndex, 0, template);
+      return newQuestions;
+    });
+  };
+
+  const addQuestion = (index?: number) => {
+    setPendingQuestionIndex(index ?? questions.length);
+    setIsTypePickerOpen(true);
+  };
+
+  const handleSelectQuestionType = (type: QuestionType) => {
+    if (pendingQuestionIndex === null) return;
+    insertQuestionAtIndex(type, pendingQuestionIndex);
+    setPendingQuestionIndex(null);
+    setIsTypePickerOpen(false);
+  };
+
+  const handleCloseTypePicker = () => {
+    setIsTypePickerOpen(false);
+    setPendingQuestionIndex(null);
+  };
+
+  const changeQuestionType = (questionIndex: number, type: QuestionType) => {
+    setQuestions(prevQuestions =>
+      prevQuestions.map((question, index) => {
+        if (index !== questionIndex) return question;
+
+        const currentType = question.type || 'multiple';
+        if (currentType === type) {
+          return { ...question, type };
+        }
+
+        if (type === 'boolean') {
+          const trueOption = question.options[0] || 'Verdadeiro';
+          const falseOption = question.options[1] || 'Falso';
+
+          return {
+            ...question,
+            type,
+            options: [trueOption, falseOption],
+            correctAnswer: Math.min(question.correctAnswer, 1)
+          };
+        }
+
+        let newOptions = [...question.options];
+
+        if (currentType === 'boolean') {
+          newOptions = [
+            question.options[0] && question.options[0] !== 'Verdadeiro' ? question.options[0] : '',
+            question.options[1] && question.options[1] !== 'Falso' ? question.options[1] : '',
+            '',
+            ''
+          ];
+        }
+
+        while (newOptions.length < 3) {
+          newOptions.push('');
+        }
+
+        if (type === 'multiple') {
+          while (newOptions.length < 4) {
+            newOptions.push('');
+          }
+          newOptions = newOptions.slice(0, 4);
+        } else {
+          newOptions = newOptions.slice(0, Math.max(3, newOptions.length));
+        }
+
+        const correctedAnswer = Math.min(question.correctAnswer, newOptions.length - 1);
+
+        return {
+          ...question,
+          type,
+          options: newOptions,
+          correctAnswer: correctedAnswer
+        };
+      })
+    );
   };
 
   const updateQuestion = (index: number, field: keyof Question, value: string | number) => {
+    if (field === 'type') {
+      changeQuestionType(index, value as QuestionType);
+      return;
+    }
     const updated = [...questions];
     updated[index] = { ...updated[index], [field]: value };
     setQuestions(updated);
@@ -225,6 +321,80 @@ export default function HostPage() {
     const updated = [...questions];
     updated[questionIndex].options[optionIndex] = value;
     setQuestions(updated);
+  };
+
+  const setOptionCount = (questionIndex: number, count: number) => {
+    setQuestions(prevQuestions =>
+      prevQuestions.map((question, index) => {
+        if (index !== questionIndex) return question;
+
+        const questionType = question.type || 'multiple';
+        if (questionType === 'boolean') {
+          return { ...question, type: questionType };
+        }
+
+        if (count === question.options.length) {
+          return question;
+        }
+
+        let newOptions: string[];
+        if (count > question.options.length) {
+          newOptions = [
+            ...question.options,
+            ...Array(count - question.options.length).fill('')
+          ];
+        } else {
+          newOptions = question.options.slice(0, count);
+        }
+
+        const correctedAnswer =
+          question.correctAnswer >= newOptions.length ? 0 : question.correctAnswer;
+
+        return {
+          ...question,
+          type: questionType,
+          options: newOptions,
+          correctAnswer: correctedAnswer
+        };
+      })
+    );
+  };
+
+  const removeOption = (questionIndex: number, optionIndex: number) => {
+    setQuestions(prevQuestions =>
+      prevQuestions.map((question, index) => {
+        if (index !== questionIndex) return question;
+
+        const questionType = question.type || 'multiple';
+        if (questionType === 'boolean') {
+          return { ...question, type: questionType };
+        }
+
+        if (question.options.length <= 2) {
+          return { ...question, type: questionType };
+        }
+
+        const newOptions = question.options.filter((_, i) => i !== optionIndex);
+
+        let correctedAnswer = question.correctAnswer;
+        if (optionIndex === question.correctAnswer) {
+          correctedAnswer = 0;
+        } else if (optionIndex < question.correctAnswer) {
+          correctedAnswer = Math.max(0, question.correctAnswer - 1);
+        }
+
+        if (correctedAnswer >= newOptions.length) {
+          correctedAnswer = 0;
+        }
+
+        return {
+          ...question,
+          type: questionType,
+          options: newOptions,
+          correctAnswer: correctedAnswer
+        };
+      })
+    );
   };
 
   const removeQuestion = (index: number) => {
@@ -359,6 +529,7 @@ export default function HostPage() {
           options: shuffledAnswers,
           correctAnswer: correctIndex,
           timeLimit: 30,
+          type: 'multiple',
           explanation: q.explanation || undefined
         };
       });
@@ -387,20 +558,31 @@ export default function HostPage() {
   }
 
   return (
-    <HostQuizCreationScreen
-      questions={questions}
-      gameSettings={gameSettings}
-      onUpdateSettings={setGameSettings}
-      onAddQuestion={addQuestion}
-      onAppendTSV={handleAppendTSV}
-      onFileImport={handleFileImport}
-      onUpdateQuestion={updateQuestion}
-      onUpdateOption={updateOption}
-      onRemoveQuestion={removeQuestion}
-      onMoveQuestion={moveQuestion}
-      onDownloadTSV={downloadTSV}
-      onCreateGame={createGame}
-      onGenerateAIQuestions={handleGenerateAIQuestions}
-    />
+    <>
+      <HostQuizCreationScreen
+        questions={questions}
+        gameSettings={gameSettings}
+        onUpdateSettings={setGameSettings}
+        onAddQuestion={addQuestion}
+        onAppendTSV={handleAppendTSV}
+        onFileImport={handleFileImport}
+        onUpdateQuestion={updateQuestion}
+        onUpdateOption={updateOption}
+        onSetOptionCount={setOptionCount}
+        onRemoveOption={removeOption}
+        onRemoveQuestion={removeQuestion}
+        onMoveQuestion={moveQuestion}
+        onChangeQuestionType={changeQuestionType}
+        onDownloadTSV={downloadTSV}
+        onCreateGame={createGame}
+        onGenerateAIQuestions={handleGenerateAIQuestions}
+      />
+
+      <QuestionTypePicker
+        isOpen={isTypePickerOpen}
+        onClose={handleCloseTypePicker}
+        onSelect={handleSelectQuestionType}
+      />
+    </>
   );
-} 
+}

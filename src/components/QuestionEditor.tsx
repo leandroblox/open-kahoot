@@ -1,12 +1,13 @@
 'use client';
 
-import { Trash2, ChevronUp, ChevronDown, Shuffle, Upload } from 'lucide-react';
+import { Trash2, ChevronUp, ChevronDown, Shuffle, Upload, MinusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Question } from '@/types/game';
+import type { Question, QuestionType } from '@/types/game';
 import Button from '@/components/Button';
 import { useCallback, useState } from 'react';
 import { compressImage } from '@/lib/compressImage';
 import Image from 'next/image';
+import QuestionTypeSelector from '@/components/host-setup/QuestionTypeSelector';
 
 interface QuestionEditorProps {
   question: Question;
@@ -14,8 +15,11 @@ interface QuestionEditorProps {
   totalQuestions: number;
   onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
+  onSetOptionCount: (questionIndex: number, count: number) => void;
+  onRemoveOption: (questionIndex: number, optionIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
+  onChangeQuestionType: (index: number, type: QuestionType) => void;
 }
 
 export default function QuestionEditor({
@@ -24,9 +28,13 @@ export default function QuestionEditor({
   totalQuestions,
   onUpdateQuestion,
   onUpdateOption,
+  onSetOptionCount,
+  onRemoveOption,
   onRemoveQuestion,
-  onMoveQuestion
+  onMoveQuestion,
+  onChangeQuestionType
 }: QuestionEditorProps) {
+  const currentType: QuestionType = question.type ?? 'multiple';
   const handleShuffleOptions = () => {
     // Create array of options with their indices
     const optionsWithIndices = question.options.map((option, index) => ({
@@ -113,20 +121,34 @@ export default function QuestionEditor({
   }, [questionIndex, onUpdateQuestion]);
 
   return (
-    <motion.div 
+    <motion.div
       layout
       layoutId={question.id}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="bg-white/5 rounded-lg p-6 border border-white/20"
     >
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-4">
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
+            <p className="text-white/60 text-sm">Selecione o tipo de pergunta antes de editar o conteúdo.</p>
+          </div>
+          <QuestionTypeSelector
+            value={currentType}
+            onChange={(type) => onChangeQuestionType(questionIndex, type)}
+          />
+        </div>
+        <div className="flex gap-2 self-start">
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-lg font-semibold text-white font-jua">Pergunta {questionIndex + 1}</h3>
         <div className="flex gap-2">
           <Button
             onClick={handleShuffleOptions}
+            disabled={question.options.length < 2}
             variant="ghost"
             size="icon"
             icon={Shuffle}
+            className="text-white hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed"
             className="text-white hover:text-white/70"
             title="Embaralhar alternativas"
           >
@@ -169,17 +191,40 @@ export default function QuestionEditor({
           placeholder="Digite sua pergunta..."
         />
       </div>
-      <div className="flex gap-4 mb-4">
-        <div className="grid flex-1 grid-cols-1 md:grid-cols-2 gap-4">
-          {question.options.map((option, optionIndex) => (
-            <div 
-              key={optionIndex} 
-              className="flex items-center gap-2"
+      <div className="flex flex-col lg:flex-row gap-4 mb-4">
+        <div className="flex-1 space-y-4">
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <span>Alternativas:</span>
+            <select
+              value={question.options.length}
+              onChange={(event) => onSetOptionCount(questionIndex, Number(event.target.value))}
+              disabled={currentType === 'boolean'}
+              className="bg-white/10 border border-white/30 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              {([2, 3, 4] as const).map(count => (
+                <option key={count} value={count} className="text-black">
+                  {count}
+                </option>
+              ))}
+            </select>
+            {currentType === 'boolean' && (
+              <span className="text-white/60">Tipo fixo com duas opções</span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {question.options.map((option, optionIndex) => {
+              const isCorrectAnswer = question.correctAnswer === optionIndex;
+              const canRemoveOption = question.options.length > 2 && currentType !== 'boolean';
+
+              return (
+                <div
+                  key={optionIndex}
+                  className="flex items-center gap-2"
+                >
               <input
                 type="radio"
                 name={`correct-${questionIndex}`}
-                checked={question.correctAnswer === optionIndex}
+                checked={isCorrectAnswer}
                 onChange={() => onUpdateQuestion(questionIndex, 'correctAnswer', optionIndex)}
                 className="text-green-500 focus:ring-green-500"
               />
@@ -188,16 +233,28 @@ export default function QuestionEditor({
                 value={option}
                 onChange={(e) => onUpdateOption(questionIndex, optionIndex, e.target.value)}
                 className={`flex-1 px-3 py-2 rounded-lg border text-white placeholder-white/60 focus:outline-none focus:ring-2 transition-all ${
-                  question.correctAnswer === optionIndex
+                  isCorrectAnswer
                     ? 'bg-green-300/20 border-green-400 focus:ring-green-400 focus:border-green-300'
                     : 'bg-white/20 border-white/30 focus:ring-white/50 focus:border-white/50'
                 }`}
                 placeholder={`Alternativa ${optionIndex + 1}...`}
               />
+              {canRemoveOption && (
+                <Button
+                  onClick={() => onRemoveOption(questionIndex, optionIndex)}
+                  variant="ghost"
+                  size="icon"
+                  icon={MinusCircle}
+                  className="text-white hover:text-white/70"
+                  title="Remover alternativa"
+                />
+              )}
             </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
-        <div className="relative w-28 h-28">
+        <div className="relative w-28 h-28 self-start">
           <input
             type="file"
             id={`image-upload-${question.id}`}

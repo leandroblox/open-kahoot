@@ -4,7 +4,7 @@ import { Plus, Upload, Sparkles } from 'lucide-react';
 import Button from '@/components/Button';
 
 interface AddQuestionButtonProps {
-  onAddQuestion: (index: number) => void;
+  onAddQuestion: (index?: number) => void;
   onAppendTSV: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
   onOpenAIModal: () => void;
   index: number;
