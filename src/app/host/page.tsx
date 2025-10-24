@@ -255,10 +255,8 @@ export default function HostPage() {
         if (index !== questionIndex) return question;
 
         const currentType = question.type || 'multiple';
-        if (currentType === type) {
-          return { ...question, type };
-        }
-
+        
+        // Handle conversion to boolean type
         if (type === 'boolean') {
           const trueOption = question.options[0] || 'Verdadeiro';
           const falseOption = question.options[1] || 'Falso';
@@ -271,8 +269,10 @@ export default function HostPage() {
           };
         }
 
+        // Start with existing options
         let newOptions = [...question.options];
 
+        // Handle conversion from boolean type
         if (currentType === 'boolean') {
           newOptions = [
             question.options[0] && question.options[0] !== 'Verdadeiro' ? question.options[0] : '',
@@ -282,19 +282,24 @@ export default function HostPage() {
           ];
         }
 
+        // Ensure minimum 3 options for single and multiple types
         while (newOptions.length < 3) {
           newOptions.push('');
         }
 
+        // Adjust options based on target type
         if (type === 'multiple') {
+          // Multiple choice needs exactly 4 options
           while (newOptions.length < 4) {
             newOptions.push('');
           }
           newOptions = newOptions.slice(0, 4);
-        } else {
-          newOptions = newOptions.slice(0, Math.max(3, newOptions.length));
+        } else if (type === 'single') {
+          // Single choice needs exactly 3 options
+          newOptions = newOptions.slice(0, 3);
         }
 
+        // Ensure correct answer index is valid
         const correctedAnswer = Math.min(question.correctAnswer, newOptions.length - 1);
 
         return {
@@ -329,24 +334,31 @@ export default function HostPage() {
         if (index !== questionIndex) return question;
 
         const questionType = question.type || 'multiple';
+        
+        // Boolean type always has 2 options, cannot be changed
         if (questionType === 'boolean') {
-          return { ...question, type: questionType };
+          return question;
         }
 
+        // No change needed if count is the same
         if (count === question.options.length) {
           return question;
         }
 
+        // Build new options array
         let newOptions: string[];
         if (count > question.options.length) {
+          // Add empty options
           newOptions = [
             ...question.options,
             ...Array(count - question.options.length).fill('')
           ];
         } else {
+          // Remove extra options
           newOptions = question.options.slice(0, count);
         }
 
+        // Ensure correct answer index is valid
         const correctedAnswer =
           question.correctAnswer >= newOptions.length ? 0 : question.correctAnswer;
 

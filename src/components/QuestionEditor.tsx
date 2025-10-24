@@ -34,7 +34,9 @@ export default function QuestionEditor({
   onMoveQuestion,
   onChangeQuestionType
 }: QuestionEditorProps) {
-  const currentType: QuestionType = question.type ?? 'multiple';
+  // Get current type, defaulting to 'multiple' if undefined
+  const currentType: QuestionType = question.type || 'multiple';
+  
   const handleShuffleOptions = () => {
     // Create array of options with their indices
     const optionsWithIndices = question.options.map((option, index) => ({
@@ -199,6 +201,7 @@ export default function QuestionEditor({
               disabled={currentType === 'boolean'}
               className="bg-white/10 border border-white/30 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              {/* Only show valid option counts: 2, 3, or 4 */}
               {([2, 3, 4] as const).map(count => (
                 <option key={count} value={count} className="text-black">
                   {count}
@@ -206,7 +209,7 @@ export default function QuestionEditor({
               ))}
             </select>
             {currentType === 'boolean' && (
-              <span className="text-white/60">Tipo fixo com duas opções</span>
+              <span className="text-white/60 text-xs">Tipo fixo com duas opções</span>
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
