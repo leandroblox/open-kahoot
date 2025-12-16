@@ -38,8 +38,16 @@ export class QuestionManager {
     
     players.forEach(player => {
       if (player.currentAnswer !== undefined) {
-        answerCounts[player.currentAnswer]++;
-        if (player.currentAnswer === question.correctAnswer) {
+        player.currentAnswer.forEach(ansIndex => {
+          answerCounts[ansIndex]++;
+        });
+        
+        // Check if player got it right (must match exactly)
+        const isCorrect = 
+          player.currentAnswer.length === question.correctAnswers.length &&
+          player.currentAnswer.every(val => question.correctAnswers.includes(val));
+          
+        if (isCorrect) {
           correctAnswers++;
         }
       }
@@ -68,7 +76,11 @@ export class QuestionManager {
       return undefined;
     }
 
-    const wasCorrect = player.currentAnswer === question.correctAnswer;
+    // Check if correct (must match exactly)
+    const wasCorrect = 
+      player.currentAnswer !== undefined &&
+      player.currentAnswer.length === question.correctAnswers.length &&
+      player.currentAnswer.every(val => question.correctAnswers.includes(val));
     
     // Calculate points earned for this question
     let pointsEarned = 0;

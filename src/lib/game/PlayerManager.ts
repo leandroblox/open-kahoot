@@ -89,7 +89,7 @@ export class PlayerManager {
     return player?.isHost ?? false;
   }
 
-  submitAnswer(game: Game, playerId: string, answerIndex: number, isPersistentId: boolean = false): boolean {
+  submitAnswer(game: Game, playerId: string, answerIndices: number[], isPersistentId: boolean = false): boolean {
     const player = isPersistentId 
       ? this.getPlayerById(playerId, game)
       : this.getPlayerBySocketId(playerId, game);
@@ -100,14 +100,13 @@ export class PlayerManager {
 
     // Don't allow duplicate answers
     if (player.currentAnswer !== undefined) {
-      // Removed console.log
+      // Answer already submitted
       return false;
     }
 
-    player.currentAnswer = answerIndex;
+    player.currentAnswer = answerIndices;
     player.answerTime = Date.now();
     
-    // Removed console.log
     return true;
   }
 
@@ -129,7 +128,12 @@ export class PlayerManager {
     game.players.forEach(player => {
       if (!player.isHost) {
         const responseTime = player.answerTime ? (player.answerTime - questionStartTime) : 0;
-        const wasCorrect = player.currentAnswer === question.correctAnswer;
+        
+        // Check if correct (must match exactly)
+        const wasCorrect = 
+          player.currentAnswer !== undefined &&
+          player.currentAnswer.length === question.correctAnswers.length &&
+          player.currentAnswer.every(val => question.correctAnswers.includes(val));
         
         // Calculate points earned for this question
         let pointsEarned = 0;
@@ -151,11 +155,11 @@ export class PlayerManager {
           playerName: player.name,
           questionIndex: game.currentQuestionIndex,
           questionId: question.id,
-          answerIndex: player.currentAnswer ?? null,
+          answerIndices: player.currentAnswer ?? null,
           answerTime: player.answerTime,
           responseTime: responseTime,
           pointsEarned: pointsEarned,
-          wasCorrect: wasCorrect && player.currentAnswer !== undefined,
+          wasCorrect: wasCorrect,
           hasDyslexiaSupport: player.hasDyslexiaSupport || false
         };
 
@@ -164,12 +168,18 @@ export class PlayerManager {
     });
   }
 
-  updateScores(game: Game, correctAnswer: number): void {
+  updateScores(game: Game, correctAnswers: number[]): void {
     const questionStartTime = game.questionStartTime || Date.now();
     const maxPoints = 1000;
     
     game.players.forEach(player => {
-      if (!player.isHost && player.currentAnswer === correctAnswer) {
+      // Check if correct (must match exactly)
+      const isCorrect = 
+        player.currentAnswer !== undefined &&
+        player.currentAnswer.length === correctAnswers.length &&
+        player.currentAnswer.every(val => correctAnswers.includes(val));
+
+      if (!player.isHost && isCorrect) {
         // Calculate time-based score (linear decrease from 1000 to 0)
         const responseTime = (player.answerTime || Date.now()) - questionStartTime;
         const answerTimeLimit = game.settings.answerTime * 1000;
@@ -243,23 +253,29 @@ export class PlayerManager {
         '';
 
       // Separate correct and wrong propositions
-      const correctProposition = question.options[question.correctAnswer];
-      const wrongPropositions = question.options.filter((_, index) => index !== question.correctAnswer);
+      // Separate correct and wrong propositions
+      // For multiple answers, this is a bit ambiguous in the TSV structure designed for single choice
+      // We will list the first correct answer as 'proposition_wrong1' if there are multiple? 
+      // No, let's just take the first correct answer for now or join them?
+      // The requirement asks for 'proposition_correct', so let's join text if multiple
+      const correctPropositionsText = question.correctAnswers.map(i => question.options[i]).join('; ');
+      
+      const wrongPropositions = question.options.filter((_, index) => !question.correctAnswers.includes(index));
       
       // Pad wrong propositions to ensure we have exactly 3 (fill with empty strings if needed)
       while (wrongPropositions.length < 3) {
         wrongPropositions.push('');
       }
 
-      const choiceString = answerRecord.answerIndex !== null 
-        ? question.options[answerRecord.answerIndex] 
+      const choiceString = answerRecord.answerIndices !== null 
+        ? answerRecord.answerIndices.map(i => question.options[i]).join('; ')
         : '';
 
       const row = [
         answerRecord.questionIndex.toString(),
         questionDatetime,
         question.question.replace(/\t/g, ' '), // Remove tabs from question text
-        correctProposition.replace(/\t/g, ' '),
+        correctPropositionsText.replace(/\t/g, ' '),
         wrongPropositions[0].replace(/\t/g, ' '),
         wrongPropositions[1].replace(/\t/g, ' '),
         wrongPropositions[2].replace(/\t/g, ' '),

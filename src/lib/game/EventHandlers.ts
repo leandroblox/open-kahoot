@@ -41,8 +41,8 @@ export class EventHandlers {
         this.handleStartGame(socket, gameId);
       });
 
-      socket.on('submitAnswer', (gameId, questionId, answerIndex, persistentId) => {
-        this.handleSubmitAnswer(socket, gameId, questionId, answerIndex, persistentId);
+      socket.on('submitAnswer', (gameId, questionId, answerIndices, persistentId) => {
+        this.handleSubmitAnswer(socket, gameId, questionId, answerIndices, persistentId);
       });
 
       socket.on('nextQuestion', (gameId) => {
@@ -210,7 +210,7 @@ export class EventHandlers {
     socket: Socket,
     gameId: string,
     questionId: string,
-    answerIndex: number,
+    answerIndices: number[],
     persistentId?: string
   ): void {
     try {
@@ -231,7 +231,7 @@ export class EventHandlers {
         return;
       }
 
-      const success = this.playerManager.submitAnswer(game, persistentId || socket.id, answerIndex, !!persistentId);
+      const success = this.playerManager.submitAnswer(game, persistentId || socket.id, answerIndices, !!persistentId);
       if (success && player) {
         this.io.to(game.id).emit('playerAnswered', player.id);
         

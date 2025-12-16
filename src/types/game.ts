@@ -4,7 +4,7 @@ export interface Question {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: number; // Index of correct answer (0-based)
+  correctAnswers: number[]; // Indices of correct answers (0-based)
   timeLimit: number; // Time limit in seconds
   explanation?: string;
   image?: string;
@@ -16,7 +16,7 @@ export interface AnswerRecord {
   playerName: string;
   questionIndex: number;
   questionId: string;
-  answerIndex: number | null; // null if no answer was given
+  answerIndices: number[] | null; // null if no answer was given
   answerTime?: number;
   responseTime: number; // milliseconds from question start
   pointsEarned: number;
@@ -55,7 +55,7 @@ export interface Player {
   name: string;
   score: number;
   isHost: boolean;
-  currentAnswer?: number;
+  currentAnswer?: number[];
   answerTime?: number;
   isConnected: boolean; // Track connection status
   hasDyslexiaSupport?: boolean; // New field for dyslexia support
@@ -109,7 +109,7 @@ export interface ClientToServerEvents {
   joinGame: (pin: string, playerName: string, persistentId?: string, callback?: (success: boolean, game?: Game, playerId?: string) => void) => void;
   validateGame: (gameId: string, callback: (valid: boolean, game?: Game) => void) => void;
   startGame: (gameId: string) => void;
-  submitAnswer: (gameId: string, questionId: string, answerIndex: number, persistentId?: string) => void;
+  submitAnswer: (gameId: string, questionId: string, answerIndices: number[], persistentId?: string) => void;
   nextQuestion: (gameId: string) => void;
   showLeaderboard: (gameId: string) => void;
   endGame: (gameId: string) => void;

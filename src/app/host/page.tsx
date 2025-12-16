@@ -132,7 +132,7 @@ export default function HostPage() {
                 id: uuidv4(),
                 question: questionText,
                 options: shuffledAnswers,
-                correctAnswer: correctIndex,
+                correctAnswers: [correctIndex],
                 timeLimit: 30, // Default time limit
                 type: 'multiple',
                 explanation: explanation || undefined,
@@ -205,7 +205,7 @@ export default function HostPage() {
         id: uuidv4(),
         question: '',
         options: ['Verdadeiro', 'Falso'],
-        correctAnswer: 0,
+        correctAnswers: [0],
         timeLimit: 30,
         type
       };
@@ -216,7 +216,7 @@ export default function HostPage() {
       id: uuidv4(),
       question: '',
       options: Array(optionCount).fill(''),
-      correctAnswer: 0,
+      correctAnswers: [0],
       timeLimit: 30,
       type
     };
@@ -267,7 +267,7 @@ export default function HostPage() {
             ...question,
             type,
             options: [trueOption, falseOption],
-            correctAnswer: Math.min(question.correctAnswer, 1)
+            correctAnswers: [Math.min(question.correctAnswers[0] || 0, 1)]
           };
         }
 
@@ -295,24 +295,26 @@ export default function HostPage() {
           newOptions = newOptions.slice(0, Math.max(3, newOptions.length));
         }
 
-        const correctedAnswer = Math.min(question.correctAnswer, newOptions.length - 1);
+        const firstCorrect = question.correctAnswers[0] || 0;
+        const correctedAnswerIndex = Math.min(firstCorrect, newOptions.length - 1);
 
         return {
           ...question,
           type,
           options: newOptions,
-          correctAnswer: correctedAnswer
+          correctAnswers: [correctedAnswerIndex]
         };
       })
     );
   };
 
-  const updateQuestion = (index: number, field: keyof Question, value: string | number) => {
+  const updateQuestion = (index: number, field: keyof Question, value: string | number | number[]) => {
     if (field === 'type') {
       changeQuestionType(index, value as QuestionType);
       return;
     }
     const updated = [...questions];
+
     updated[index] = { ...updated[index], [field]: value };
     setQuestions(updated);
   };
@@ -347,14 +349,20 @@ export default function HostPage() {
           newOptions = question.options.slice(0, count);
         }
 
-        const correctedAnswer =
-          question.correctAnswer >= newOptions.length ? 0 : question.correctAnswer;
+        const correctedAnswers = question.correctAnswers
+          .map(idx => (idx >= newOptions.length ? -1 : idx))
+          .filter(idx => idx !== -1);
+          
+        // Ensure at least one correct answer if empty (default to 0 if exists)
+        if (correctedAnswers.length === 0 && newOptions.length > 0) {
+          correctedAnswers.push(0);
+        }
 
         return {
           ...question,
           type: questionType,
           options: newOptions,
-          correctAnswer: correctedAnswer
+          correctAnswers: correctedAnswers
         };
       })
     );
@@ -375,23 +383,21 @@ export default function HostPage() {
         }
 
         const newOptions = question.options.filter((_, i) => i !== optionIndex);
+        
+        // Update correct answers indices
+        let newCorrectAnswers = question.correctAnswers
+          .filter(idx => idx !== optionIndex) // Remove if it was the removed option
+          .map(idx => (idx > optionIndex ? idx - 1 : idx)); // Shift down if after
 
-        let correctedAnswer = question.correctAnswer;
-        if (optionIndex === question.correctAnswer) {
-          correctedAnswer = 0;
-        } else if (optionIndex < question.correctAnswer) {
-          correctedAnswer = Math.max(0, question.correctAnswer - 1);
-        }
-
-        if (correctedAnswer >= newOptions.length) {
-          correctedAnswer = 0;
+        if (newCorrectAnswers.length === 0 && newOptions.length > 0) {
+          newCorrectAnswers = [0];
         }
 
         return {
           ...question,
           type: questionType,
           options: newOptions,
-          correctAnswer: correctedAnswer
+          correctAnswers: newCorrectAnswers
         };
       })
     );
@@ -417,7 +423,28 @@ export default function HostPage() {
     
     const socket = getSocket();
     const title = 'Jogo de Quiz'; // Título padrão
-    socket.emit('createGame', title, questions, gameSettings, (createdGame: Game) => {
+
+    // Sanitize questions: remove empty options and update correct answer indices
+    const sanitizedQuestions = questions.map(q => {
+      const validOptionsWithIndices = q.options
+        .map((opt, idx) => ({ text: opt, oldIndex: idx }))
+        .filter(item => item.text.trim() !== '');
+      
+      const newOptions = validOptionsWithIndices.map(item => item.text);
+      
+      // Remap correct answers
+      const newCorrectAnswers = q.correctAnswers
+        .map(oldIdx => validOptionsWithIndices.findIndex(item => item.oldIndex === oldIdx))
+        .filter(newIdx => newIdx !== -1);
+
+      return {
+        ...q,
+        options: newOptions,
+        correctAnswers: newCorrectAnswers
+      };
+    });
+
+    socket.emit('createGame', title, sanitizedQuestions, gameSettings, (createdGame: Game) => {
       setGame(createdGame);
       clearNavigationFlag(); // Clear flag since game is created and questions are saved
     });
@@ -461,10 +488,16 @@ export default function HostPage() {
     const tsvContent = Papa.unparse({
       fields: ['question', 'correct', 'wrong1', 'wrong2', 'wrong3', 'explanation', 'image'],
       data: questions.map(q => {
-        const wrongOptions = q.options.filter((_, i) => i !== q.correctAnswer);
+        // For TSV export, we take the FIRST correct answer as 'correct'
+        // and put others in wrongs? Or strictly follow standard?
+        // Standard Kahoot TSV expects 1 correct.
+        // We'll use the first correct answer.
+        const firstCorrectIndex = q.correctAnswers[0] || 0;
+        const wrongOptions = q.options.filter((_, i) => i !== firstCorrectIndex);
+        
         return {
           question: q.question,
-          correct: q.options[q.correctAnswer],
+          correct: q.options[firstCorrectIndex] || '',
           wrong1: wrongOptions[0] || '',
           wrong2: wrongOptions[1] || '',
           wrong3: wrongOptions[2] || '',
@@ -527,7 +560,7 @@ export default function HostPage() {
           id: uuidv4(),
           question: q.question,
           options: shuffledAnswers,
-          correctAnswer: correctIndex,
+          correctAnswers: [correctIndex],
           timeLimit: 30,
           type: 'multiple',
           explanation: q.explanation || undefined

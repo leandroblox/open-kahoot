@@ -13,7 +13,7 @@ interface QuestionEditorProps {
   question: Question;
   questionIndex: number;
   totalQuestions: number;
-  onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
+  onUpdateQuestion: (index: number, field: keyof Question, value: string | number | number[]) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
   onSetOptionCount: (questionIndex: number, count: number) => void;
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;
@@ -53,13 +53,14 @@ export default function QuestionEditor({
       onUpdateOption(questionIndex, newIndex, item.option);
     });
     
-    // Find new index of the correct answer
-    const newCorrectAnswerIndex = optionsWithIndices.findIndex(
-      item => item.originalIndex === question.correctAnswer
-    );
+    // Find new indices of the correct answers
+    const newCorrectAnswers = optionsWithIndices
+      .map((item, newIndex) => ({ ...item, newIndex }))
+      .filter(item => question.correctAnswers.includes(item.originalIndex))
+      .map(item => item.newIndex);
     
-    // Update the correct answer index
-    onUpdateQuestion(questionIndex, 'correctAnswer', newCorrectAnswerIndex);
+    // Update the correct answer indices
+    onUpdateQuestion(questionIndex, 'correctAnswers', newCorrectAnswers);
   };
 
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,7 +212,7 @@ export default function QuestionEditor({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {question.options.map((option, optionIndex) => {
-              const isCorrectAnswer = question.correctAnswer === optionIndex;
+              const isCorrectAnswer = question.correctAnswers.includes(optionIndex);
               const canRemoveOption = question.options.length > 2 && currentType !== 'boolean';
 
               return (
@@ -220,11 +221,20 @@ export default function QuestionEditor({
                   className="flex items-center gap-2"
                 >
               <input
-                type="radio"
+                type={currentType === 'multiple' ? 'checkbox' : 'radio'}
                 name={`correct-${questionIndex}`}
-                checked={isCorrectAnswer}
-                onChange={() => onUpdateQuestion(questionIndex, 'correctAnswer', optionIndex)}
-                className="text-green-500 focus:ring-green-500"
+                checked={question.correctAnswers.includes(optionIndex)}
+                onChange={() => {
+                  if (currentType === 'multiple') {
+                    const newCorrect = question.correctAnswers.includes(optionIndex)
+                      ? question.correctAnswers.filter(i => i !== optionIndex)
+                      : [...question.correctAnswers, optionIndex];
+                    onUpdateQuestion(questionIndex, 'correctAnswers', newCorrect);
+                  } else {
+                    onUpdateQuestion(questionIndex, 'correctAnswers', [optionIndex]);
+                  }
+                }}
+                className={`${currentType === 'multiple' ? 'rounded' : 'rounded-full'} text-green-500 focus:ring-green-500`}
               />
               <input
                 type="text"

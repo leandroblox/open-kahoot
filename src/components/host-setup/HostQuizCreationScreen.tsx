@@ -17,7 +17,7 @@ interface HostQuizCreationScreenProps {
   onAddQuestion: (index?: number) => void;
   onAppendTSV: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
+  onUpdateQuestion: (index: number, field: keyof Question, value: string | number | number[]) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
   onSetOptionCount: (questionIndex: number, count: number) => void;
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;
@@ -48,7 +48,14 @@ export default function HostQuizCreationScreen({
   onGenerateAIQuestions
 }: HostQuizCreationScreenProps) {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const isFormValid = !questions.some(q => !q.question || q.options.some(o => !o));
+  const isFormValid = questions.length > 0 && !questions.some(q => {
+    const hasQuestion = !!q.question?.trim();
+    const validOptions = q.options.filter(o => !!o?.trim());
+    const hasEnoughOptions = validOptions.length >= 2;
+    const hasCorrectAnswer = q.correctAnswers && q.correctAnswers.length > 0;
+    
+    return !hasQuestion || !hasEnoughOptions || !hasCorrectAnswer;
+  });
 
   return (
     <PageLayout gradient="host" maxWidth="4xl">
@@ -96,6 +103,11 @@ export default function HostQuizCreationScreen({
                 Criar Jogo
               </Button>
             </div>
+            {!isFormValid && (
+              <p className="text-red-400 text-sm mt-2 bg-black/20 inline-block px-3 py-1 rounded">
+                Preencha todas as perguntas com texto, pelo menos 2 opções e uma resposta correta.
+              </p>
+            )}
           </div>
         )}
       </Card>

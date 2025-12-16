@@ -62,7 +62,7 @@ export default function HostResultsScreen({
         {questionStats.answers.map((answer, index) => (
           <div key={index} className="relative">
             <div className={`flex items-center justify-between p-6 rounded-lg border-2 ${
-              index === questionStats.question.correctAnswer
+              questionStats.question.correctAnswers.includes(index)
                 ? 'bg-green-500/30 border-green-400 ring-2 ring-green-300'
                 : 'bg-white/10 border-white/20'
             }`}>
@@ -75,7 +75,7 @@ export default function HostResultsScreen({
                 <span className="text-white font-semibold text-xl">
                   {questionStats.question.options[index]}
                 </span>
-                {index === questionStats.question.correctAnswer && (
+                {questionStats.question.correctAnswers.includes(index) && (
                   <span className="text-green-300 font-bold text-lg">✓ CERTO</span>
                 )}
               </div>
@@ -86,7 +86,7 @@ export default function HostResultsScreen({
             </div>
             <div 
               className={`absolute bottom-0 left-0 h-2 rounded-b-lg transition-all duration-1000 ${
-                index === questionStats.question.correctAnswer ? correct.primary : incorrect.primary
+                questionStats.question.correctAnswers.includes(index) ? correct.primary : incorrect.primary
               }`}
               style={{ width: `${answer.percentage}%` }}
             />

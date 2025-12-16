@@ -11,7 +11,7 @@ interface GameAnsweringPhaseScreenProps {
   game: Game | null;
   isHost: boolean;
   isPlayer: boolean;
-  onSubmitAnswer: (answerIndex: number) => void;
+  onSubmitAnswer: (answerIndices: number[]) => void;
   hasAnswered: boolean;
 }
 
@@ -58,7 +58,11 @@ export default function GameAnsweringPhaseScreen({
             {hasAnswered ? (
               <PlayerWaitingScreen />
             ) : (
-              <PlayerAnsweringScreen options={currentQuestion.options} onSubmitAnswer={onSubmitAnswer} />
+              <PlayerAnsweringScreen 
+                options={currentQuestion.options} 
+                onSubmitAnswer={onSubmitAnswer} 
+                questionType={currentQuestion.type}
+              />
             )}
           </>
         )}

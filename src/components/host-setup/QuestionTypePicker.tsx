@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
-import Button from '@/components/Button';
+
 import type { QuestionType } from '@/types/game';
 import { questionTypeOptions } from './questionTypeOptions';
 
@@ -65,13 +65,11 @@ export default function QuestionTypePicker({ isOpen, onClose, onSelect }: Questi
                 </div>
                 <p className="text-sm text-white/70 leading-relaxed">{option.description}</p>
                 <div className="mt-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="w-full justify-center bg-white/10 text-white group-hover:bg-white/20"
+                  <div
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2 font-semibold text-white transition-colors group-hover:bg-white/20"
                   >
                     Selecionar
-                  </Button>
+                  </div>
                 </div>
               </button>
             );

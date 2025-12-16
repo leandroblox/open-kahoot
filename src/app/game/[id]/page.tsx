@@ -22,7 +22,7 @@ interface GameState {
   currentQuestion: Question | null;
   timeLeft: number;
   phase: 'thinking' | 'answering';
-  selectedAnswer: number | null;
+  selectedAnswer: number[] | null;
   hasAnswered: boolean;
   questionStats: GameStats | null;
   personalResult: PersonalResult | null;
@@ -39,7 +39,7 @@ type GameAction =
   | { type: 'SET_GAME_DATA'; payload: { game: Game; status: GamePhase } }
   | { type: 'START_THINKING_PHASE'; payload: { question: Question; thinkTime: number } }
   | { type: 'START_ANSWERING_PHASE'; payload: { answerTime: number } }
-  | { type: 'SUBMIT_ANSWER'; payload: { answerIndex: number } }
+  | { type: 'SUBMIT_ANSWER'; payload: { answerIndices: number[] } }
   | { type: 'QUESTION_ENDED'; payload: GameStats }
   | { type: 'WAITING_FOR_RESULTS' }
   | { type: 'PERSONAL_RESULT'; payload: PersonalResult }
@@ -95,7 +95,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SUBMIT_ANSWER':
       return {
         ...state,
-        selectedAnswer: action.payload.answerIndex,
+        selectedAnswer: action.payload.answerIndices,
         hasAnswered: true
       };
       
@@ -310,17 +310,17 @@ export default function GamePage() {
     };
   }, [state.timeLeft, state.phase]);
 
-  const submitAnswer = (answerIndex: number) => {
+  const submitAnswer = (answerIndices: number[]) => {
     if (state.hasAnswered || !state.currentQuestion || state.phase !== 'answering') return;
     
-    dispatch({ type: 'SUBMIT_ANSWER', payload: { answerIndex } });
+    dispatch({ type: 'SUBMIT_ANSWER', payload: { answerIndices } });
     
     // Get persistent player ID from localStorage
     const gamePin = state.game?.pin;
     const persistentId = gamePin ? localStorage.getItem(`player_id_${gamePin}`) || undefined : undefined;
     
     const socket = getSocket();
-    socket.emit('submitAnswer', gameId, state.currentQuestion.id, answerIndex, persistentId);
+    socket.emit('submitAnswer', gameId, state.currentQuestion.id, answerIndices, persistentId);
   };
 
   const nextQuestion = () => {

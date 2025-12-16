@@ -8,7 +8,7 @@ interface HostQuestionsSectionProps {
   onAddQuestion: (index?: number) => void;
   onAppendTSV: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
+  onUpdateQuestion: (index: number, field: keyof Question, value: string | number | number[]) => void;
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
   onSetOptionCount: (questionIndex: number, count: number) => void;
   onRemoveOption: (questionIndex: number, optionIndex: number) => void;

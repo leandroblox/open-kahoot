@@ -198,12 +198,12 @@ export class GameplayLoop {
     }
 
     // Update scores
-    this.playerManager.updateScores(game, currentQuestion.correctAnswer);
+    this.playerManager.updateScores(game, currentQuestion.correctAnswers);
     
     // Get and emit stats
     const stats = this.questionManager.getQuestionStats(game);
     if (stats) {
-      const correctAnswerCount = stats.answers.find(a => a.optionIndex === currentQuestion.correctAnswer)?.count || 0;
+      const correctAnswerCount = stats.correctAnswers;
       console.log(`[PIN ${game.pin}] Resultados | Acertos: ${correctAnswerCount}/${stats.totalPlayers} | Média de pontos: ${Math.round(game.players.filter(p => !p.isHost).reduce((sum, p) => sum + p.score, 0) / Math.max(1, game.players.filter(p => !p.isHost).length))}`);
       this.io.to(game.id).emit('questionEnded', stats);
       
