@@ -9,6 +9,7 @@ import { GameManager } from './GameManager';
 import { PlayerManager } from './PlayerManager';
 import { QuestionManager } from './QuestionManager';
 import { TimerManager } from './TimerManager';
+import { sanitizeQuestion } from './security';
 
 export class GameplayLoop {
   private phaseCallbacks: Map<string, (() => void) | null> = new Map();
@@ -149,8 +150,10 @@ export class GameplayLoop {
 
     console.log(`[PIN ${game.pin}] Thinking phase | Question: "${question.question.substring(0, 30)}${question.question.length > 30 ? '...' : ''}" | Duration: ${game.settings.thinkTime}s`);
     
-    // Emit thinking phase to all clients
-    this.io.to(game.id).emit('thinkingPhase', question, game.settings.thinkTime);
+    console.log(`[PIN ${game.pin}] Thinking phase | Question: "${question.question.substring(0, 30)}${question.question.length > 30 ? '...' : ''}" | Duration: ${game.settings.thinkTime}s`);
+    
+    // Emit thinking phase to all clients (with sanitized question)
+    this.io.to(game.id).emit('thinkingPhase', sanitizeQuestion(question), game.settings.thinkTime);
     
     // Schedule answering phase using TimerManager
     this.timerManager.setThinkingPhaseTimer(game.id, () => {
@@ -303,7 +306,9 @@ export class GameplayLoop {
           const remaining = Math.max(0, game.settings.thinkTime - Math.floor(elapsed / 1000));
           if (remaining > 0) {
             console.log(`[PIN ${game.pin}] Syncing to thinking phase | Remaining: ${remaining}s`);
-            this.io.to(socketId).emit('thinkingPhase', question, remaining);
+            // Sanitize question if not host (though safe to sanitize for host too usually)
+            const qToSend = isHost ? question : sanitizeQuestion(question);
+            this.io.to(socketId).emit('thinkingPhase', qToSend, remaining);
           }
         }
         break;
@@ -312,7 +317,8 @@ export class GameplayLoop {
         const currentQuestion = this.questionManager.getCurrentQuestion(game);
         if (currentQuestion) {
           // For answering phase, show thinking first then answering
-          this.io.to(socketId).emit('thinkingPhase', currentQuestion, game.settings.thinkTime);
+          const qToSend = isHost ? currentQuestion : sanitizeQuestion(currentQuestion);
+          this.io.to(socketId).emit('thinkingPhase', qToSend, game.settings.thinkTime);
           
           const delay = isHost ? 2000 : 100; // Host gets longer delay for UX
           setTimeout(() => {

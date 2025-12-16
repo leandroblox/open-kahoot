@@ -11,6 +11,8 @@ export interface Question {
   type?: QuestionType;
 }
 
+export type SanitizedQuestion = Omit<Question, 'correctAnswers'>;
+
 export interface AnswerRecord {
   playerId: string;
   playerName: string;
@@ -49,6 +51,10 @@ export interface Game {
   answerHistory: AnswerRecord[]; // Historical record of all answers
 }
 
+export interface SanitizedGame extends Omit<Game, 'questions'> {
+  questions: SanitizedQuestion[];
+}
+
 export interface Player {
   id: string; // This is now the persistent player ID (UUID)
   socketId: string; // Current socket connection ID
@@ -84,10 +90,10 @@ export interface PersonalResult {
 
 // Socket Events
 export interface ServerToClientEvents {
-  gameJoined: (game: Game) => void;
-  gameStarted: (game: Game) => void;
-  questionStarted: (question: Question, timeLimit: number) => void;
-  thinkingPhase: (question: Question, thinkTime: number) => void;
+  gameJoined: (game: Game | SanitizedGame) => void;
+  gameStarted: (game: Game | SanitizedGame) => void;
+  questionStarted: (question: Question | SanitizedQuestion, timeLimit: number) => void;
+  thinkingPhase: (question: Question | SanitizedQuestion, thinkTime: number) => void;
   answeringPhase: (answerTime: number) => void;
   questionEnded: (stats: GameStats) => void;
   hostResults: (stats: GameStats) => void;
@@ -106,8 +112,8 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   createGame: (title: string, questions: Question[], settings: GameSettings, callback: (game: Game) => void) => void;
-  joinGame: (pin: string, playerName: string, persistentId?: string, callback?: (success: boolean, game?: Game, playerId?: string) => void) => void;
-  validateGame: (gameId: string, callback: (valid: boolean, game?: Game) => void) => void;
+  joinGame: (pin: string, playerName: string, persistentId?: string, callback?: (success: boolean, game?: Game | SanitizedGame, playerId?: string) => void) => void;
+  validateGame: (gameId: string, callback: (valid: boolean, game?: Game | SanitizedGame) => void) => void;
   startGame: (gameId: string) => void;
   submitAnswer: (gameId: string, questionId: string, answerIndices: number[], persistentId?: string) => void;
   nextQuestion: (gameId: string) => void;

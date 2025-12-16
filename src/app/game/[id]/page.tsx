@@ -3,7 +3,7 @@
 import { useEffect, useReducer } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { getSocket } from '@/lib/socket-client';
-import type { Game, Question, GameStats, Player, PersonalResult, GamePhase } from '@/types/game';
+import type { Game, Question, GameStats, Player, PersonalResult, GamePhase, SanitizedGame, SanitizedQuestion } from '@/types/game';
 // Game Screen Components
 import GameValidationScreen from '@/components/game-screens/GameValidationScreen';
 import GameErrorScreen from '@/components/game-screens/GameErrorScreen';
@@ -18,8 +18,8 @@ import GameFallbackScreen from '@/components/game-screens/GameFallbackScreen';
 
 // Game state management
 interface GameState {
-  game: Game | null;
-  currentQuestion: Question | null;
+  game: Game | SanitizedGame | null;
+  currentQuestion: Question | SanitizedQuestion | null;
   timeLeft: number;
   phase: 'thinking' | 'answering';
   selectedAnswer: number[] | null;
@@ -36,17 +36,17 @@ interface GameState {
 type GameAction =
   | { type: 'SET_VALIDATING'; payload: boolean }
   | { type: 'SET_GAME_ERROR'; payload: string }
-  | { type: 'SET_GAME_DATA'; payload: { game: Game; status: GamePhase } }
-  | { type: 'START_THINKING_PHASE'; payload: { question: Question; thinkTime: number } }
+  | { type: 'SET_GAME_DATA'; payload: { game: Game | SanitizedGame; status: GamePhase } }
+  | { type: 'START_THINKING_PHASE'; payload: { question: Question | SanitizedQuestion; thinkTime: number } }
   | { type: 'START_ANSWERING_PHASE'; payload: { answerTime: number } }
   | { type: 'SUBMIT_ANSWER'; payload: { answerIndices: number[] } }
   | { type: 'QUESTION_ENDED'; payload: GameStats }
   | { type: 'WAITING_FOR_RESULTS' }
   | { type: 'PERSONAL_RESULT'; payload: PersonalResult }
-  | { type: 'SHOW_LEADERBOARD'; payload: { leaderboard: Player[]; game: Game } }
+  | { type: 'SHOW_LEADERBOARD'; payload: { leaderboard: Player[]; game: Game | SanitizedGame } }
   | { type: 'GAME_FINISHED'; payload: Player[] }
   | { type: 'TICK_TIMER' }
-  | { type: 'GAME_STARTED'; payload: Game };
+  | { type: 'GAME_STARTED'; payload: Game | SanitizedGame };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -180,7 +180,7 @@ export default function GamePage() {
     
     if (isPlayer) {
       // Player is rejoining - first validate game to get the PIN
-      socket.emit('validateGame', gameId, (valid: boolean, gameData?: Game) => {
+      socket.emit('validateGame', gameId, (valid: boolean, gameData?: Game | SanitizedGame) => {
         if (valid && gameData) {
           // Game exists, now check if we have a stored player ID for this game's PIN
           const gamePin = gameData.pin;
@@ -190,7 +190,7 @@ export default function GamePage() {
             // We have a stored player ID, try to rejoin
             const playerName = gameData.players.find(p => p.id === storedId)?.name || 'Jogador';
             
-            socket.emit('joinGame', gamePin, playerName, storedId, (success: boolean, game?: Game) => {
+            socket.emit('joinGame', gamePin, playerName, storedId, (success: boolean, game?: Game | SanitizedGame) => {
               dispatch({ type: 'SET_VALIDATING', payload: false });
               if (success && game) {
                 dispatch({ type: 'SET_GAME_DATA', payload: { game: game, status: game.status } });
@@ -213,7 +213,7 @@ export default function GamePage() {
       });
     } else {
       // Host validation - just validate game exists
-      socket.emit('validateGame', gameId, (valid: boolean, gameData?: Game) => {
+      socket.emit('validateGame', gameId, (valid: boolean, gameData?: Game | SanitizedGame) => {
         dispatch({ type: 'SET_VALIDATING', payload: false });
         if (valid && gameData) {
           dispatch({ type: 'SET_GAME_DATA', payload: { game: gameData, status: gameData.status } });
@@ -224,12 +224,12 @@ export default function GamePage() {
       });
     }
 
-    socket.on('gameStarted', (gameData: Game) => {
+    socket.on('gameStarted', (gameData: Game | SanitizedGame) => {
       // Removed console.log
       dispatch({ type: 'GAME_STARTED', payload: gameData });
     });
 
-    socket.on('thinkingPhase', (question: Question, thinkTime: number) => {
+    socket.on('thinkingPhase', (question: Question | SanitizedQuestion, thinkTime: number) => {
       // Removed console.log
       dispatch({ type: 'START_THINKING_PHASE', payload: { question, thinkTime } });
     });
@@ -252,7 +252,7 @@ export default function GamePage() {
       dispatch({ type: 'QUESTION_ENDED', payload: stats });
     });
 
-    socket.on('leaderboardShown', (leaderboardData: Player[], gameData: Game) => {
+    socket.on('leaderboardShown', (leaderboardData: Player[], gameData: Game | SanitizedGame) => {
       dispatch({ type: 'SHOW_LEADERBOARD', payload: { leaderboard: leaderboardData, game: gameData } });
       // Players stay on their personal result screen
     });

@@ -3,12 +3,12 @@ import { getGradient } from '@/lib/palette';
 import HostAnsweringScreen from '@/components/host-screens/HostAnsweringScreen';
 import PlayerAnsweringScreen from '@/components/player-screens/PlayerAnsweringScreen';
 import PlayerWaitingScreen from '@/components/player-screens/PlayerWaitingScreen';
-import type { Question, Game } from '@/types/game';
+import type { Question, Game, SanitizedQuestion, SanitizedGame } from '@/types/game';
 
 interface GameAnsweringPhaseScreenProps {
-  currentQuestion: Question;
+  currentQuestion: Question | SanitizedQuestion;
   timeLeft: number;
-  game: Game | null;
+  game: Game | SanitizedGame | null;
   isHost: boolean;
   isPlayer: boolean;
   onSubmitAnswer: (answerIndices: number[]) => void;
@@ -46,7 +46,7 @@ export default function GameAnsweringPhaseScreen({
         {/* Host Screen - Show question and full answer choices */}
         {isHost && (
           <HostAnsweringScreen 
-            currentQuestion={currentQuestion}
+            currentQuestion={currentQuestion as Question}
             timeLeft={timeLeft}
             answerTime={game?.settings.answerTime || 30}
           />

@@ -7,6 +7,11 @@ export class GameManager {
   private gamesByPin: Map<string, string> = new Map(); // pin -> gameId
 
   createGame(hostSocketId: string, title: string, questions: Question[], settings: GameSettings): Game {
+    // Security: Limit number of active games to prevent DoS
+    if (this.games.size >= 100) {
+      throw new Error('Server at capacity (max 100 games)');
+    }
+
     const gameId = uuidv4();
     const hostId = uuidv4(); // Generate persistent ID for host
     const pin = this.generatePin();

@@ -2,12 +2,12 @@ import PageLayout from '@/components/PageLayout';
 import Timer from '@/components/Timer';
 import HostThinkingScreen from '@/components/host-screens/HostThinkingScreen';
 import PlayerThinkingScreen from '@/components/player-screens/PlayerThinkingScreen';
-import type { Question, Game } from '@/types/game';
+import type { Question, Game, SanitizedQuestion, SanitizedGame } from '@/types/game';
 
 interface GameThinkingPhaseScreenProps {
-  currentQuestion: Question;
+  currentQuestion: Question | SanitizedQuestion;
   timeLeft: number;
-  game: Game | null;
+  game: Game | SanitizedGame | null;
   isHost: boolean;
   isPlayer: boolean;
 }
@@ -30,7 +30,7 @@ export default function GameThinkingPhaseScreen({
 
       {/* Question Display - Host Screen */}
       {isHost && (
-        <HostThinkingScreen currentQuestion={currentQuestion} />
+        <HostThinkingScreen currentQuestion={currentQuestion as Question} />
       )}
 
       {/* Player Device - Waiting */}

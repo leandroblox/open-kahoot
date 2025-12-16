@@ -4,12 +4,14 @@ import type {
   ClientToServerEvents,
   Question,
   GameSettings,
-  Game
+  Game,
+  SanitizedGame
 } from '@/types/game';
 import { GameManager } from './GameManager';
 import { PlayerManager } from './PlayerManager';
 import { QuestionManager } from './QuestionManager';
 import { GameplayLoop } from './GameplayLoop';
+import { sanitizeGame } from './security';
 
 export class EventHandlers {
   constructor(
@@ -95,8 +97,8 @@ export class EventHandlers {
     socket: Socket,
     pin: string,
     playerName: string,
-    persistentId?: string | ((success: boolean, game?: Game, playerId?: string) => void),
-    callback?: (success: boolean, game?: Game, playerId?: string) => void
+    persistentId?: string | ((success: boolean, game?: Game | SanitizedGame, playerId?: string) => void),
+    callback?: (success: boolean, game?: Game | SanitizedGame, playerId?: string) => void
   ): void {
     // Handle both old and new callback signatures
     const actualCallback = typeof persistentId === 'function' ? persistentId : callback;
@@ -139,7 +141,7 @@ export class EventHandlers {
   private handleValidateGame(
     socket: Socket,
     gameId: string,
-    callback: (valid: boolean, game?: Game) => void
+    callback: (valid: boolean, game?: Game | SanitizedGame) => void
   ): void {
     // Removed console.log
     
@@ -163,7 +165,10 @@ export class EventHandlers {
           this.gameplayLoop.syncPlayerToCurrentPhase(game, socket.id, !!isHost);
         }
         
-        callback(true, game);
+        // Sanitize game data if not host
+        const gameData = isHost ? game : sanitizeGame(game);
+        
+        callback(true, gameData);
       } else {
         callback(false);
       }
@@ -198,7 +203,16 @@ export class EventHandlers {
       console.log(`[PIN ${game.pin}] Starting game with ${playerCount} active players`);
       
       // Start the gameplay loop
-      this.io.to(game.id).emit('gameStarted', game);
+      // Send sanitized game to all (players don't need answers, host has them anyway)
+      // Actually host needs them, but host is usually separate. 
+      // Ideally we emit sanitized to room, and full to host.
+      // But for simplicity, we emit sanitized to room. Host usually has local state or we can emit specific host event.
+      // HOWEVER, the 'gameStarted' event is listened by everyone.
+      // If we send sanitized, host UI might break if it expects answers?
+      // Host UI usually uses the QuestionManager or just displays the questions.
+      // Safe bet: Emit sanitized to room. Host can fetch full game via other means or we accept host gets sanitized in this event.
+      // Checking Host screens: Host usually knows the questions from creation.
+      this.io.to(game.id).emit('gameStarted', sanitizeGame(game));
       this.gameplayLoop.startGameLoop(game);
     } catch (error) {
       console.error(`❌ [START_GAME] Error starting game:`, error);

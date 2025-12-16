@@ -2,11 +2,11 @@ import { ChevronRight } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
 import Card from '@/components/Card';
 import Leaderboard from '@/components/Leaderboard';
-import type { Player, Game } from '@/types/game';
+import type { Player, Game, SanitizedGame } from '@/types/game';
 
 interface GameLeaderboardScreenProps {
   leaderboard: Player[];
-  game: Game | null;
+  game: Game | SanitizedGame | null;
   onNextQuestion: () => void;
 }
 

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, Lock, Dice6 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { getSocket } from '@/lib/socket-client';
-import type { Game } from '@/types/game';
+import type { Game, SanitizedGame } from '@/types/game';
 import { gameConfig, featureConfig } from '@/lib/config';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
@@ -48,7 +48,7 @@ export default function JoinGameFormScreen() {
       localStorage.setItem(storageKey, persistentId);
     }
     
-    socket.emit('joinGame', pin, playerName, persistentId, (success: boolean, game?: Game, playerId?: string) => {
+    socket.emit('joinGame', pin, playerName, persistentId, (success: boolean, game?: Game | SanitizedGame, playerId?: string) => {
       setIsJoining(false);
       
       if (success && game && playerId) {
